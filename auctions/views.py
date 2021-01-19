@@ -68,9 +68,15 @@ def register(request):
 def listing(request, listing_id):
 
     listing = Listing.objects.get(pk=listing_id)
-    bids = Bid.objects.filter(item=listing_id)
-    
+    bids = Bid.objects.order_by('-amount').filter(item=listing_id)
+    price = bids[0].amount
+
     return render(request, "auctions/listing.html", {
         "listing": listing,
-        "bids": bids
+        "bids": bids,
+        "price": price
     })
+
+def bid(request, listing_id):
+
+    return render(request, "auctions/index.html")

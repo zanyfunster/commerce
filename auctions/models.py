@@ -28,7 +28,7 @@ class Bid(models.Model):
     bidder = models.ForeignKey(User, on_delete=models.CASCADE, related_name="bidder")
     item = models.ForeignKey(Listing, on_delete=models.CASCADE, related_name="item", null=True)
     amount = models.DecimalField(max_digits=10, decimal_places=2)
-    bid_timestamp = models.DateField(auto_now_add=True)
+    bid_timestamp = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return f"{self.bidder} for {self.item}: {self.amount}"
