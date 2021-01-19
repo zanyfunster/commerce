@@ -1,5 +1,7 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
+from model_utils import Choices
+from model_utils.fields import StatusField
 
 
 class User(AbstractUser):
@@ -10,10 +12,11 @@ class Listing(models.Model):
     title = models.CharField(max_length=50) 
     description = models.TextField(max_length=300)
     imageURL = models.URLField()
-    active = models.BooleanField(default=True)
     listing_created = models.DateField(auto_now_add=True)
     creator = models.ForeignKey(User, on_delete=models.CASCADE, related_name="creator")
     bidders = models.ManyToManyField(User, blank=True, related_name="listings")
+    STATUS = Choices('Active', 'Closed')
+    status = StatusField()
 
     def __str__(self):
         return f"{self.title}"
