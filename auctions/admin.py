@@ -4,13 +4,13 @@ from django.contrib import admin
 from .models import Bid, Comment, User, Listing
 
 class ListingAdmin(admin.ModelAdmin):
-    list_display = ("title", "description", "listing_created", "creator")
+    list_display = ("title", "description", "listing_created", "creator", "status")
 
 class BidAdmin(admin.ModelAdmin):
-    list_display = ("bidder", "listing", "amount", "bid_timestamp")
+    list_display = ("bidder", "item", "amount", "bid_timestamp")
 
 class CommentAdmin(admin.ModelAdmin):
-    list_display = ("commenter", "listing", "comment_timestamp")
+    list_display = ("commenter", "topic", "comment_timestamp")
 
 admin.site.register(Bid, BidAdmin)
 admin.site.register(Comment, CommentAdmin)
