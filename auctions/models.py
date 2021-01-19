@@ -31,7 +31,7 @@ class Bid(models.Model):
     bid_timestamp = models.DateField(auto_now_add=True)
 
     def __str__(self):
-        return f"{self.bidder} for {self.listing}: {self.amount}"
+        return f"{self.bidder} for {self.item}: {self.amount}"
 
 class Comment(models.Model):
 
