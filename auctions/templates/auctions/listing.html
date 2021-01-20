@@ -12,8 +12,8 @@
     {% if user.is_authenticated %}
         <form action="{% url 'bid' listing.id %}" method="POST">
             {% csrf_token %}
-            <input type="number" min="0.01" step="0.01" name="bid_amount" value="{{ price }}">
-            <input type="submit">
+            {{ bid_form.as_p }}
+            <input type="submit" value="Place Bid">
         </form>
     {% else %}
         <h5>Register or sign in to start bidding!</h5>

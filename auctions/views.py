@@ -3,8 +3,9 @@ from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
+from django import forms
 
-from .models import User, Listing, Bid, Comment
+from .models import User, Listing, Bid, Comment, BidForm
 
 
 def index(request):
@@ -70,11 +71,13 @@ def listing(request, listing_id):
     listing = Listing.objects.get(pk=listing_id)
     bids = Bid.objects.order_by('-amount').filter(item=listing_id)
     price = bids[0].amount
+    bid_form = BidForm(initial={'item': listing_id, 'amount': price, 'bidder': user})
 
     return render(request, "auctions/listing.html", {
         "listing": listing,
         "bids": bids,
-        "price": price
+        "price": price,
+        "bid_form": bid_form
     })
 
 def bid(request, listing_id):
