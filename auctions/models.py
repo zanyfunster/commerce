@@ -2,8 +2,6 @@ from django.contrib.auth.models import AbstractUser
 from django.db import models
 from model_utils import Choices
 from model_utils.fields import StatusField
-from django.forms import ModelForm
-from django import forms
 
 
 class User(AbstractUser):
@@ -45,7 +43,3 @@ class Comment(models.Model):
         return f"{self.commenter} on {self.listing}"
 
 
-class BidForm(ModelForm):
-    class Meta:
-        model = Bid
-        fields = ('amount', 'item', 'bidder')

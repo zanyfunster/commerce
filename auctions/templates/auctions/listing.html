@@ -24,6 +24,8 @@
         <li>
             {{ bid.bidder }} bid ${{ bid.amount }} on {{ bid.bid_timestamp|date:"n/j/y" }} {{ bid.bid_timestamp|time:"H:i e" }} 
         </li>
-        {% endfor %}
+    {% empty %}
+        <em>No bids yet!</em>
+    {% endfor %}
 
 {% endblock %}
