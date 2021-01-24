@@ -1,0 +1,20 @@
+{% extends "auctions/layout.html" %}
+
+{% block title %}
+    Pants Auction: Add Listing
+{% endblock %}
+
+{% block body %}
+    
+    <h1>Create a New Listing</h1>
+    {% if user.is_authenticated %}
+    <form action="{% url 'new' %}" method="POST">
+        {% csrf_token %}
+        {{ new_listing_form.as_p }}
+        <input type="submit" value="Add Listing">
+    </form>
+    {% else %}
+        <h5>Register or sign in to create a new auction listing!</h5>
+    {% endif %}
+
+{% endblock %}
