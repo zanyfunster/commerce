@@ -4,8 +4,10 @@
     
 
     {% if user.is_authenticated %}
-        <h5>{{ bid_message }}</h5>
-        <p> reserve price: {{ reserve }} and current high bid: {{ price }}</p>
+        <h5>{{ bid }}</h5>
+        <p>{{ bid.item }}</p>
+        <p>{{ bid.amount }}</p>
+        <p>{{ bid.bidder }}</p>
     {% else %}
         <h5>Register or sign in to start bidding!</h5>
     {% endif %}

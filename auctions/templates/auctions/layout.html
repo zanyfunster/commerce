@@ -24,6 +24,9 @@
                 <li class="nav-item">
                     <a class="nav-link" href="{% url 'logout' %}">Log Out</a>
                 </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'new' %}">Add New Listing</a>
+                </li>
             {% else %}
                 <li class="nav-item">
                     <a class="nav-link" href="{% url 'login' %}">Log In</a>
@@ -34,6 +37,17 @@
             {% endif %}
         </ul>
         <hr>
+        {% if messages %}
+        <div id="messages">
+            
+            {% for message in messages %}
+                <div class="alert alert-{% if message.tags %}{{ message.tags }}"{% endif %} role="alert">
+                    {{ message }}
+                </div>
+            {% endfor %}     
+                      
+        </div>
+        {% endif %}
         {% block body %}
         {% endblock %}
     </body>
