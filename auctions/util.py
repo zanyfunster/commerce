@@ -21,8 +21,6 @@ def GetListingBids(listing_id):
 
 def GetHighestBidder(listing_id):
 
-    listing = Listing.objects.get(pk=listing_id)
-
     # gets bids for listing_id and sorts from highest to lowest amount
     bids = Bid.objects.order_by('-amount').filter(item=listing_id)
 
@@ -33,3 +31,13 @@ def GetHighestBidder(listing_id):
         high_bidder = None
     
     return high_bidder
+
+# capitalize words in a title
+def CapitalizeTitle(title):
+
+    words = title.split(" ")
+    capitalized_words = []
+    for word in words:
+        capitalized_words.append(word.capitalize())
+    title = " ".join(capitalized_words)
+    return title

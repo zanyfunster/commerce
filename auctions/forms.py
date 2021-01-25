@@ -95,15 +95,20 @@ class AddListingForm(forms.ModelForm):
                 else:
                     return True
 
-        # get image URL
-        try:
-            url = self.cleaned_data['imageURL']
-            image_found = image_checker(url)
-            if image_found == False:
-                self.add_error('imageURL', 'URL does not link to an image. Try a different link.')
-        except:
-            self.add_error('imageURL', 'Invalid URL. Try a different link.')
+        # if image URL provided, check that it links to an image
+        if self.cleaned_data.get('imageURL') is not None:
+            
+            try:
+                url = self.cleaned_data['imageURL']
+                image_found = image_checker(url)
+                if image_found == False:
+                    self.add_error('imageURL', 'URL does not link to an image. Try a different link.')
+            except:
+                self.add_error('imageURL', 'Invalid URL. Try a different link.')
        
-        # return error messages or image URL
-        return url
- 
+            # return error messages or image URL
+            return url
+
+        else:        
+            # return imageURL 
+            return None

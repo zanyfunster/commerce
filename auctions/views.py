@@ -4,16 +4,18 @@ from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
-from django import forms
 from django.contrib import messages
+from django.forms import HiddenInput
 
 from .models import User, Listing, Bid, Comment
 from .forms import BidForm, AddListingForm
-from .util import GetListingBids, GetHighestBidder
+from .util import GetListingBids, GetHighestBidder, CapitalizeTitle
+
 
 def index(request):
     return render(request, "auctions/index.html", {
-        "listings": Listing.objects.filter(status='Active')
+        "listings": Listing.objects.filter(status='Active'),
+        "ended": Listing.objects.filter(status='Closed')
     })
 
 
@@ -76,25 +78,41 @@ def listing(request, listing_id):
     listing = listing_bid[0]
     price = listing_bid[1]
     bids = listing_bid[2]
-
-    # display message if bidder is already highest bidder
-    high_bidder = GetHighestBidder(listing_id)
     user = request.user
 
-    if user == high_bidder:
-        new_message = f"You are currently the highest bidder!"
-        messages.add_message(request, messages.SUCCESS, new_message)
+    # check if user is listing creator so listing status and close button are displayed if active
+    if user == listing.creator:          
+        owner_listing_status = listing.status
+    else:
+        owner_listing_status = None
 
-    # populate bid form with initial values based on above and current user's id
-    # item and bidder are hidden fields but must be initialized or will trigger validation errors 
-    bid_form = BidForm(initial={'item': listing_id, 'amount': price, 'bidder': request.user.id})
+    # check if user is higher bidder
+    high_bidder = GetHighestBidder(listing_id)
+    
+    if listing.status == 'Active':
+        # if user is highest bidder on active listing, show message
+        if user == high_bidder:
+            winning_message = f"You are currently the highest bidder!"
+            messages.add_message(request, messages.SUCCESS, winning_message)
+        # populate bid form with initial values based on above and current user's id
+        # item and bidder are hidden fields but must be initialized or will trigger validation errors 
+        bid_form = BidForm(initial={'item': listing_id, 'amount': price, 'bidder': request.user.id})
+    else:
+        # if user is highest bidder and auction has ended, notify winner
+        if user == high_bidder:
+            won_message = f"Congratulations! You won this auction!"
+            messages.add_message(request, messages.SUCCESS, won_message)
+        # set bid form to none so it won't display
+        bid_form = None
 
     return render(request, "auctions/listing.html", {
+        "owner_status": owner_listing_status,
         "listing": listing,
         "bids": bids,
         "price": price,
         "bid_form": bid_form
     })
+
 
 @login_required()
 def bid(request, listing_id):
@@ -155,11 +173,12 @@ def new(request):
         # new listing form passes server-side form validation
         if listing_form.is_valid():
 
-            listing = listing_form.save()
+            listing = listing_form.save(commit=False)
+            listing.title = CapitalizeTitle(listing.title)
+            listing.save()
             listing_id = listing.id
-            title = listing.title
 
-            new_message = f"Your listing for {title} is now active!"
+            new_message = f"Your listing for {listing.title} is now active!"
             messages.add_message(request, messages.SUCCESS, new_message)
 
             return HttpResponseRedirect(reverse("listing", kwargs={'listing_id': listing_id}))
@@ -180,3 +199,32 @@ def new(request):
         return render(request, "auctions/new.html", {
             "new_listing_form": new_listing_form
         })
+
+# close a listing route and set winner
+@login_required()
+def close(request, listing_id):
+
+    # if close button submitted from listing page by creator (button will only display for creator)
+    if request.method == "POST":
+
+        listing = Listing.objects.get(pk=listing_id)
+        listing.status = 'Closed'
+        listing.save()
+
+        high_bidder = GetHighestBidder(listing_id)
+
+        if high_bidder is not None:
+            winner = f"The winner is {high_bidder}!"
+        else:
+            winner = "No one bid on this auction, so there is no winner!"
+        
+        ended_message = f"You ended this auction. {winner}"
+        messages.add_message(request, messages.WARNING, ended_message)
+
+        return HttpResponseRedirect(reverse("listing", kwargs={'listing_id': listing_id}))
+
+    # if reached by GET show error message on listing page
+    else:
+        error_message = f"You can't end an auction that you didn't create!"
+        messages.add_message(request, messages.WARNING, error_message)
+        return HttpResponseRedirect(reverse("listing", kwargs={'listing_id': listing_id}))

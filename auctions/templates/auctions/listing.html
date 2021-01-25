@@ -4,31 +4,61 @@
 {% endblock %}
 
 {% block body %}
+
+    {% if owner_status %}
+
+        {% if owner_status == 'Active' %}
+
+            <p>Your listing is currently {{owner_status}} and has {{ bids|length }} bids.</p>
+            <form action="{% url 'close' listing.id %}" method="POST">
+                {% csrf_token %}
+                <input type="submit" value="Close Listing">
+            </form>
+            {% else %}
+            <p>You closed this listing.</p>
+
+        {% endif %}
+
+    {% endif %}
+        
     <h2>{{ listing.title }}</h2>
 
     <p>{{ listing.description }}</p>
 
     <img src="{{ listing.imageURL }}">
 
-    <h4>Current High Bid: ${{ price }}</h4>
+    {% if bids|length > 0 %}
+        <h4>Highest Bid: ${{ price }}</h4>
+    {% else %}
+        <h4>Reserve Price: ${{ price }}</h4>
+    {% endif %}
 
-    {% if user.is_authenticated %}
+    {% if user.is_authenticated and bid_form %}
+
         <form action="{% url 'bid' listing.id %}" method="POST">
             {% csrf_token %}
             {{ bid_form.as_p }}
             <input type="submit" value="Place Bid">
         </form>
-    {% else %}
-        <h5>Register or sign in to start bidding!</h5>
+
+    {% elif user.is_authenticated and not bid_form %}
+
+        <p>This auction has ended. Bidding is closed.</p>
+
+    {% elif not user.is_authenticated %}
+
+        <h5><a href="{% url 'register' %}">Register</a> or <a href="{% url 'login' %}">log in</a> to start bidding!</h5>
+
     {% endif %}
 
     <h4>Bid History</h4>
+    
     {% for bid in bids %}
         <li>
             {{ bid.bidder }} bid ${{ bid.amount }} on {{ bid.bid_timestamp|date:"n/j/y" }} {{ bid.bid_timestamp|time:"H:i e" }} 
         </li>
     {% empty %}
-        <em>No bids yet!</em>
+        <em>No bids!</em>
     {% endfor %}
 
 {% endblock %}
