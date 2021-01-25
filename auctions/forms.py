@@ -61,59 +61,49 @@ class AddListingForm(forms.ModelForm):
         }
         widgets = {
             'creator': forms.HiddenInput(),
-            'status': forms.HiddenInput()
+            'status': forms.HiddenInput(),
+            'reserve': forms.NumberInput(attrs={'min': 0.00, 'step': 0.01})
         }
-        
-    # this function will be used for the validation
-    # https://www.geeksforgeeks.org/python-form-validation-using-django/
-    def clean(self):
- 
-        # data from the form is fetched using super function
-        super(AddListingForm, self).clean()
-         
+
+    # image URL validation
+    def clean_imageURL(self):
+
+        # this method returns true if a url links to an image
+        # by checking headers for 'image' in the content type    
+        def image_checker(url):
+
+            # get dictionary of request headers with request
+            request = requests.get(url)
+            headers = request.headers
+
+            # and get response headers from urlretrieve
+            response = urlretrieve(url)
+            response_headers = response[1]
+
+            # merge two headers dictionaries
+            headers.update(response_headers)
+            
+            # if 'content-type' is in headers, then get value for that key
+            content_key = 'content-type'
+            if content_key in headers:
+                content_type = headers[content_key]
+                # check if content_type contains 'image'
+                img_results = content_type.find('image')
+                # if  'image' is not found in string, find method will return -1
+                if img_results == -1:
+                    return False
+                else:
+                    return True
+
         # get image URL
-        imageURL = self.cleaned_data.get('imageURL')
-
-        if imageURL is None:
-            raise ValidationError('Invalid image URL. Try a different link.')
-        
-        # URL validation from https://docs.python.org/3/howto/urllib2.html#number-2
-        req = Request(imageURL)
         try:
-            response = urlopen(req)
-        except URLError as e:
-            if hasattr(e, 'reason'):
-                raise ValidationError('Invalid image URL. Try a different link.')
-            elif hasattr(e, 'code'):
-                raise ValidationError('Invalid image URL. Try a different link.')
-
-        # check that url links to an image
-        request = requests.get(imageURL)
-        # get dictionary of headers
-        headers = request.headers
-
-        # now check for image in response using urlretrieve, in case of sites like squarespace
-        response = urlretrieve(imageURL)
-        response_headers = response[1]
-
-        # merge two headers dictionaries
-        headers.update(response_headers)
-        
-        # if 'content-type' is in headers, then get value for that key
-        content_key = 'content-type'
-        if content_key in headers:
-            content_type = headers[content_key]
-            # check if content_type contains 'image'
-            img_results = content_type.find('image')
-            # if  'image' is not found in string, find method will return -1
-            if img_results == -1:
-                raise ValidationError('Image URL does not display an image. Try a different link.')
-
-        # now check that reserve price is greater than 0
-        reserve = self.cleaned_data.get('reserve')
-
-        if reserve <= 0:
-            raise ValidationError('You must set a reserve price higher than $0!')
-
-        # return any errors if found
-        return self.cleaned_data
+            url = self.cleaned_data['imageURL']
+            image_found = image_checker(url)
+            if image_found == False:
+                self.add_error('imageURL', 'URL does not link to an image. Try a different link.')
+        except:
+            self.add_error('imageURL', 'Invalid URL. Try a different link.')
+       
+        # return error messages or image URL
+        return url
+ 

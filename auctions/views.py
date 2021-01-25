@@ -1,12 +1,11 @@
 from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
 from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
 from django import forms
 from django.contrib import messages
-
-
 
 from .models import User, Listing, Bid, Comment
 from .forms import BidForm, AddListingForm
@@ -37,7 +36,7 @@ def login_view(request):
     else:
         return render(request, "auctions/login.html")
 
-
+@login_required()
 def logout_view(request):
     logout(request)
     return HttpResponseRedirect(reverse("index"))
@@ -97,6 +96,7 @@ def listing(request, listing_id):
         "bid_form": bid_form
     })
 
+@login_required()
 def bid(request, listing_id):
 
     # if bid submitted from listing page
@@ -143,6 +143,7 @@ def bid(request, listing_id):
         return render(request, "auctions/index.html")
 
 # create a new listing route
+@login_required()
 def new(request):
 
     # new listing submitted from add listing form   

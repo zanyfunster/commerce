@@ -2,6 +2,8 @@ from django.contrib.auth.models import AbstractUser
 from django.db import models
 from model_utils import Choices
 from model_utils.fields import StatusField
+from django.core.validators import URLValidator, MinValueValidator
+from decimal import *
 
 
 class User(AbstractUser):
@@ -10,13 +12,13 @@ class User(AbstractUser):
 class Listing(models.Model):
 
     title = models.CharField(max_length=50) 
-    description = models.TextField(max_length=300)
-    imageURL = models.URLField()
+    description = models.TextField(max_length=350)
+    imageURL = models.URLField(max_length=250, blank=True, null=True)
     listing_created = models.DateField(auto_now_add=True)
     creator = models.ForeignKey(User, on_delete=models.CASCADE, related_name="creator")
     STATUS = Choices('Active', 'Closed')
     status = StatusField()
-    reserve = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    reserve = models.DecimalField(max_digits=10, decimal_places=2, default=0.01, validators = [MinValueValidator(Decimal('0.01'))])
     bidders = models.ManyToManyField(User, blank=True, related_name="listings")
 
     def __str__(self):
