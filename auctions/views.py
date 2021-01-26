@@ -7,8 +7,8 @@ from django.urls import reverse
 from django.contrib import messages
 from django.forms import HiddenInput
 
-from .models import User, Listing, Bid, Comment
-from .forms import BidForm, AddListingForm
+from .models import User, Listing, Bid, Comment, PetType
+from .forms import BidForm, AddListingForm, SelectPetTypeForm
 from .util import GetListingBids, GetHighestBidder, CapitalizeTitle
 
 
@@ -79,6 +79,7 @@ def listing(request, listing_id):
     price = listing_bid[1]
     bids = listing_bid[2]
     user = request.user
+    pet_type = PetType.objects.get(item=listing)
 
     # check if user is listing creator so listing status and close button are displayed if active
     if user == listing.creator:          
@@ -108,6 +109,7 @@ def listing(request, listing_id):
     return render(request, "auctions/listing.html", {
         "owner_status": owner_listing_status,
         "listing": listing,
+        "category": pet_type.get_pet_type_display(),
         "bids": bids,
         "price": price,
         "bid_form": bid_form
@@ -169,16 +171,22 @@ def new(request):
 
         # get form data
         listing_form = AddListingForm(request.POST)
+        category_form = SelectPetTypeForm(request.POST)
         
-        # new listing form passes server-side form validation
-        if listing_form.is_valid():
+        # new listing form and server-side form validation
+        if listing_form.is_valid() and category_form.is_valid():
 
             listing = listing_form.save(commit=False)
             listing.title = CapitalizeTitle(listing.title)
             listing.save()
             listing_id = listing.id
 
-            new_message = f"Your listing for {listing.title} is now active!"
+            categories = category_form.save(commit=False)
+            listing = Listing.objects.get(pk=listing_id)
+            categories.item = listing
+            categories.save()
+
+            new_message = f"Successfully added {listing.title} listing!"
             messages.add_message(request, messages.SUCCESS, new_message)
 
             return HttpResponseRedirect(reverse("listing", kwargs={'listing_id': listing_id}))
@@ -186,7 +194,8 @@ def new(request):
         # new listing fails server-side form validation
         else:
             return render(request, "auctions/new.html", {
-                "new_listing_form": listing_form
+                "new_listing_form": listing_form,
+                "category_form": category_form
             })
 
 
@@ -194,10 +203,14 @@ def new(request):
     else:
 
         # populate listing form with initial values for hidden fields to prevent validation errors
+        # template gets customization from https://pypi.org/project/django-multiselectfield/
+
         new_listing_form = AddListingForm(initial={'creator': request.user.id, 'status': 'Active'})
+        select_category_form = SelectPetTypeForm()
 
         return render(request, "auctions/new.html", {
-            "new_listing_form": new_listing_form
+            "new_listing_form": new_listing_form,
+            "category_form": select_category_form
         })
 
 # close a listing route and set winner

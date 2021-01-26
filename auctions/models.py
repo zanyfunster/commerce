@@ -37,11 +37,45 @@ class Bid(models.Model):
 
 class Comment(models.Model):
 
-    commenter = models.ForeignKey(User, on_delete=models.CASCADE, related_name="commenter")
-    topic = models.ForeignKey(Listing, on_delete=models.CASCADE, related_name="topic")
+    commenter = models.ForeignKey(User, on_delete=models.CASCADE, related_name="comments_by_user")
+    topic = models.ForeignKey(Listing, on_delete=models.CASCADE, related_name="comments_by_topic")
     comment_timestamp = models.DateField(auto_now_add=True)
 
     def __str__(self):
         return f"{self.commenter} on {self.listing}"
+
+# https://pypi.org/project/django-multiselectfield/
+class PetType(models.Model):
+
+    ANY = 'A'
+    CAT = 'C'
+    DOG = 'D'
+    BIRD = 'B'
+    REPTILE = 'R'
+    CRITTER = 'S'
+    HORSE = 'H'
+    OTHER = 'O'
+
+    PET_CHOICES = [
+        (ANY, 'Any Pet'),
+        (CAT, 'Cat'),
+        (DOG, 'Dog'),
+        (BIRD, 'Bird'),
+        (REPTILE, 'Reptile'),
+        (CRITTER, 'Small Critter'),
+        (HORSE, 'Horse'),
+        (OTHER, 'Other Pet')
+    ]
+
+    pet_type = models.CharField(
+        max_length=1,
+        choices=PET_CHOICES,
+        default=ANY
+    )
+
+    item = models.ForeignKey(Listing, on_delete=models.CASCADE, blank=True, null=True, related_name="pet_type_items")
+
+    def __str__(self):
+        return f"{self.pet_type}"
 
 

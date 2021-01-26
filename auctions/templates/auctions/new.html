@@ -1,7 +1,7 @@
 {% extends "auctions/layout.html" %}
 
 {% block title %}
-    Pants Auction: Add Listing
+    Pet Costumes Auction: Add Listing
 {% endblock %}
 
 {% block body %}
@@ -10,7 +10,13 @@
     {% if user.is_authenticated %}
     <form action="{% url 'new' %}" method="POST">
         {% csrf_token %}
+
         {{ new_listing_form.as_p }}
+
+        <h5>Type of Pet:</h5>
+
+        {{ category_form.as_p }}
+
         <input type="submit" value="Add Listing">
     </form>
     {% else %}

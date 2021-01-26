@@ -1,6 +1,6 @@
 {% extends "auctions/layout.html" %}
 {% block title %}
-    Pants Auction: {{ listing.title }}
+    Pet Costumes Auction: {{ listing.title }}
 {% endblock %}
 
 {% block body %}
@@ -22,7 +22,7 @@
     {% endif %}
         
     <h2>{{ listing.title }}</h2>
-
+    <small>Category: {{ category }} Costume</small>
     <p>{{ listing.description }}</p>
 
     <img src="{{ listing.imageURL }}">

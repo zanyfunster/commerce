@@ -6,7 +6,7 @@ from urllib.error import URLError
 from urllib.parse import quote_plus, urlparse
 import requests
 
-from .models import Bid, Listing
+from .models import Bid, Listing, PetType
 from .util import GetListingBids
 
 class BidForm(forms.ModelForm):
@@ -112,3 +112,11 @@ class AddListingForm(forms.ModelForm):
         else:        
             # return imageURL 
             return None
+
+class SelectPetTypeForm(forms.ModelForm):
+    class Meta:
+        model = PetType
+        fields = ['pet_type']
+        labels = {
+            'pet_type': 'Pet Type'
+        }
