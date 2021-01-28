@@ -1,0 +1,20 @@
+{% extends "auctions/layout.html" %}
+
+{% block title %}
+    Pet Costumes Auction
+{% endblock %}
+
+{% block body %}
+    <h2>Active Listings: {{ category }}</h2>
+
+    <ul>
+        {% for listing in listings %}
+        <li>
+            <a href="{% url 'listing' listing.id %}">
+            {{ listing.title }}
+            </a>
+        </li>
+        {% endfor %}
+    </ul>
+
+{% endblock %}
