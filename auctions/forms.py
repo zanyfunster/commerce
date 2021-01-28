@@ -1,12 +1,12 @@
 from django.forms import ModelForm
 from django import forms
-from django.forms import ValidationError
+from django.forms import ValidationError, ModelMultipleChoiceField
 from urllib.request import Request, urlopen, urlretrieve
 from urllib.error import URLError
 from urllib.parse import quote_plus, urlparse
 import requests
 
-from .models import Bid, Listing, PetType
+from .models import Bid, Listing, Pet, Category
 from .util import GetListingBids
 
 class BidForm(forms.ModelForm):
@@ -52,9 +52,10 @@ class BidForm(forms.ModelForm):
 
 
 class AddListingForm(forms.ModelForm):
+
     class Meta:
         model = Listing
-        exclude = ['bidders']
+        exclude = ['bidders', 'winner', 'current_price']
         labels = {
             'reserve': 'Reserve Price',
             'imageURL': 'Link to image'
@@ -62,6 +63,7 @@ class AddListingForm(forms.ModelForm):
         widgets = {
             'creator': forms.HiddenInput(),
             'status': forms.HiddenInput(),
+            'categories': forms.CheckboxSelectMultiple(),
             'reserve': forms.NumberInput(attrs={'min': 0.00, 'step': 0.01})
         }
 
@@ -112,11 +114,3 @@ class AddListingForm(forms.ModelForm):
         else:        
             # return imageURL 
             return None
-
-class SelectPetTypeForm(forms.ModelForm):
-    class Meta:
-        model = PetType
-        fields = ['pet_type']
-        labels = {
-            'pet_type': 'Pet Type'
-        }

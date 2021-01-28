@@ -7,9 +7,10 @@ from django.urls import reverse
 from django.contrib import messages
 from django.forms import HiddenInput
 
-from .models import User, Listing, Bid, Comment, PetType
-from .forms import BidForm, AddListingForm, SelectPetTypeForm
+from .models import User, Listing, Bid, Comment, Pet, Category
+from .forms import BidForm, AddListingForm
 from .util import GetListingBids, GetHighestBidder, CapitalizeTitle
+
 
 
 def index(request):
@@ -79,7 +80,7 @@ def listing(request, listing_id):
     price = listing_bid[1]
     bids = listing_bid[2]
     user = request.user
-    pet_type = PetType.objects.get(item=listing)
+    categories = listing.categories.all()
 
     # check if user is listing creator so listing status and close button are displayed if active
     if user == listing.creator:          
@@ -109,10 +110,10 @@ def listing(request, listing_id):
     return render(request, "auctions/listing.html", {
         "owner_status": owner_listing_status,
         "listing": listing,
-        "category": pet_type.get_pet_type_display(),
         "bids": bids,
         "price": price,
-        "bid_form": bid_form
+        "bid_form": bid_form,
+        "categories": categories
     })
 
 
@@ -171,20 +172,16 @@ def new(request):
 
         # get form data
         listing_form = AddListingForm(request.POST)
-        category_form = SelectPetTypeForm(request.POST)
-        
+
         # new listing form and server-side form validation
-        if listing_form.is_valid() and category_form.is_valid():
+        if listing_form.is_valid():
 
             listing = listing_form.save(commit=False)
             listing.title = CapitalizeTitle(listing.title)
+            listing.current_price = listing.reserve
             listing.save()
+            listing_form.save_m2m()
             listing_id = listing.id
-
-            categories = category_form.save(commit=False)
-            listing = Listing.objects.get(pk=listing_id)
-            categories.item = listing
-            categories.save()
 
             new_message = f"Successfully added {listing.title} listing!"
             messages.add_message(request, messages.SUCCESS, new_message)
@@ -194,8 +191,7 @@ def new(request):
         # new listing fails server-side form validation
         else:
             return render(request, "auctions/new.html", {
-                "new_listing_form": listing_form,
-                "category_form": category_form
+                "new_listing_form": listing_form
             })
 
 
@@ -206,12 +202,11 @@ def new(request):
         # template gets customization from https://pypi.org/project/django-multiselectfield/
 
         new_listing_form = AddListingForm(initial={'creator': request.user.id, 'status': 'Active'})
-        select_category_form = SelectPetTypeForm()
 
         return render(request, "auctions/new.html", {
-            "new_listing_form": new_listing_form,
-            "category_form": select_category_form
+            "new_listing_form": new_listing_form
         })
+
 
 # close a listing route and set winner
 @login_required()
@@ -241,3 +236,28 @@ def close(request, listing_id):
         error_message = f"You can't end an auction that you didn't create!"
         messages.add_message(request, messages.WARNING, error_message)
         return HttpResponseRedirect(reverse("listing", kwargs={'listing_id': listing_id}))
+
+
+def browse(request):
+
+    # get all pet categories
+    pet_types = Pet.objects.all()
+
+    # create an empty list to hold dictionaries, which will contain pet type and corresponding listings
+    all_pet_listings = []
+
+    # iterate through listings and get corresponding pet type
+    for i in range(len(pet_types)):
+        # store pet_type name for dict
+        pet_type = pet_types[i].pet_type
+        # store listings for dict
+        listings = pet_types[i].items_by_pet.filter(status='Active')
+        # add above to dict as key and value respectively
+        pet_dict = {pet_type : listings}
+        # add each dict to the list of dicts
+        all_pet_listings.append(pet_dict)
+
+    return render(request, "auctions/browse.html", {
+        "listings": Listing.objects.filter(status='Active'),
+        "pet_listings": all_pet_listings
+    })
