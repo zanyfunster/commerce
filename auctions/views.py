@@ -295,10 +295,7 @@ def browse(request):
 
 def category(request, slug):
 
-    # need to create some kind of logic that figures out if the slug is a category or a pet_type 
-    # and gathers the rest of this accordingly so 
-    # this will work with both pet type and category
-
+    # determine if slug is a pet type or category
     pet_types = Pet.objects.all()
     is_pet = False
 
@@ -307,7 +304,9 @@ def category(request, slug):
             is_pet = True
             
     if is_pet:
+        # get pet for that slug
         pet = Pet.objects.get(slug=slug)
+        # get all listings for that pet, using related name in listing 
         listings = pet.items_by_pet.filter(status='Active')
         category = pet.pet_type
     else:

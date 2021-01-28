@@ -37,10 +37,10 @@
                             <ul>
                                 {% for pet_type, listings in pet_dict.items %}
                                     {% for listing in listings %}
-                                        {% if forloop.counter < 3 %}
-                                        <li><a href="{% url 'listing' listing.id %}">{{ listing.title }} ${{ listing.current_price }}</a></li>
+                                        {% if forloop.counter < 5 %}
+                                            <li><a href="{% url 'listing' listing.id %}">{{ listing.title }} ${{ listing.current_price }}</a></li>
                                         {% elif forloop.last %}
-                                        <p><a href="{% url 'category' pet_type|slugify %}">View more listings in this category</a></p>
+                                            <p><a href="{% url 'category' pet_type|slugify %}">View all {{ pet_type }} listings</a></p>
                                         {% endif %}
                                     {% empty %}
                                         <em>No active listings</em>
@@ -63,7 +63,7 @@
                     <h5 class="mb-0">
                         <button class="btn btn-link" data-toggle="collapse" data-target="#category-collapse{{ forloop.counter }}" aria-expanded="true" aria-controls="category-collapse{{ forloop.counter }}">
                             {% for category_name in category_dict %}
-                                {{ category_name }} Costumes
+                            {{ category_name }} Costumes
                             {% endfor %}
                         </button>
                     </h5>
@@ -72,14 +72,13 @@
                     <div id="category-collapse{{ forloop.counter }}" class="collapse" aria-labelledby="category-heading{{ forloop.counter }}" data-parent="#accordion">
                         <div class="card-body">
                             <ul>
+
                                 {% for category_name, category_listings in category_dict.items %}
                                     {% for listing in category_listings %}
-                                        {% if forloop.counter < 3 %}
+                                        {% if forloop.counter < 5 %}
                                             <li><a href="{% url 'listing' listing.id %}">{{ listing.title }} ${{ listing.current_price }}</a></li>
                                         {% elif forloop.last %}
-
-                                                <p><a href="{% url 'category' category_name|slugify %}">View more listings in this category </a></p>
-
+                                            <p><a href="{% url 'category' category_name|slugify %}">View all {{ category_name }} listings </a></p>
                                         {% endif %}
                                     {% empty %}
                                         <em>No active listings</em>
