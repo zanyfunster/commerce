@@ -240,6 +240,9 @@ def close(request, listing_id):
 
 def browse(request):
 
+    # get pet type listings and add to dicts
+    # pet type name as key and listings as value
+
     # get all pet categories
     pet_types = Pet.objects.all()
 
@@ -254,10 +257,64 @@ def browse(request):
         listings = pet_types[i].items_by_pet.filter(status='Active')
         # add above to dict as key and value respectively
         pet_dict = {pet_type : listings}
-        # add each dict to the list of dicts
+        # add each dict to a list of dicts
         all_pet_listings.append(pet_dict)
+
+
+    # get categories with listings and put in dicts
+    # category name as key and listings as value
+
+    # get all categories
+    categories = Category.objects.all()
+
+    # create empty list to store category/listing dicts
+    categorized_listings = []
+    category_slugs = []
+
+    # iterate through categories and get all listings in that category
+    for i in range(len(categories)):
+        # get name to stash in dict as key
+        category_name = categories[i].category
+
+        # get category and look up all active listings in that category, based on many-to-many related name in listing
+        category = categories[i]
+        category_listings = category.items_by_category.filter(status='Active')
+
+        # add name and listings to dict for displaying in template
+        category_dict = {category_name:category_listings}
+
+        # add dict to categorized listings list
+        categorized_listings.append(category_dict)
 
     return render(request, "auctions/browse.html", {
         "listings": Listing.objects.filter(status='Active'),
-        "pet_listings": all_pet_listings
+        "pet_listings": all_pet_listings,
+        "categorized_listings": categorized_listings
+    })
+
+
+def category(request, slug):
+
+    # need to create some kind of logic that figures out if the slug is a category or a pet_type 
+    # and gathers the rest of this accordingly so 
+    # this will work with both pet type and category
+
+    pet_types = Pet.objects.all()
+    is_pet = False
+
+    for pet_type in pet_types:
+        if slug == pet_type.slug:
+            is_pet = True
+            
+    if is_pet:
+        pet = Pet.objects.get(slug=slug)
+        listings = pet.items_by_pet.filter(status='Active')
+        category = pet.pet_type
+    else:
+        category = Category.objects.get(slug=slug)
+        listings = category.items_by_category.filter(status='Active')
+
+    return render(request, "auctions/category.html", {
+        "category": category,
+        "listings": listings
     })

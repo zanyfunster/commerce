@@ -12,6 +12,7 @@ class User(AbstractUser):
 class Category(models.Model):
 
     category = models.CharField(max_length=20)
+    slug = models.SlugField(max_length=20, blank=True, null=True)
 
     def __str__(self):
         return f"{self.category}"
@@ -20,6 +21,7 @@ class Category(models.Model):
 class Pet(models.Model):
 
     pet_type = models.CharField(max_length=20)
+    slug = models.SlugField(max_length=20, blank=True, null=True)
 
     def __str__(self):
         return f"{self.pet_type}"
