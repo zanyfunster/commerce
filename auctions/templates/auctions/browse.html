@@ -1,40 +1,61 @@
 {% extends "auctions/layout.html" %}
 
 {% block title %}
-    Pet Costumes Auction
+    Pet Costumes Auctions
 {% endblock %}
 
 {% block body %}
-    <h2>Browse by Category</h2>
+<div class="container">
+    <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
+        <li class="nav-item" role="presentation">
+            <a class="nav-link active" id="pills-pet-type-tab" data-bs-toggle="pill" href="#pills-pet-type" role="tab" aria-controls="pills-pet-type" aria-selected="true">Browse by Pet Type</a>
+        </li>    
+        <li class="nav-item" role="presentation">
+                <a class="nav-link" id="pills-category-tab" data-bs-toggle="pill" href="#pills-category" role="tab" aria-controls="pills-category" aria-selected="false">Browse by Costume Category</a>
+        </li>
+    </ul>
 
-    <div id="accordion">
-        {% for pet_dict in pet_listings %}
-        <div class="card">
-            <div class="card-header" id="heading{{ forloop.counter }}">
-              <h5 class="mb-0">
-                <button class="btn btn-link" data-toggle="collapse" data-target="#collapse{{ forloop.counter }}" aria-expanded="true" aria-controls="collapse{{ forloop.counter }}">
-                    {% for pet_type in pet_dict %}
-                        {{ pet_type }} Costumes
-                    {% endfor %}
-                </button>
-              </h5>
-            </div>
-        
-            <div id="collapse{{ forloop.counter }}" class="collapse show" aria-labelledby="heading{{ forloop.counter }}" data-parent="#accordion">
-                <div class="card-body">
-                    <ul>
-                        {% for pet_type, listings in pet_dict.items %}
-                            {% for listing in listings %}
-                                <li><a href="{% url 'listing' listing.id %}">{{ listing.title }} ${{ listing.current_price }}</a></li>
-                            {% empty %}
-                                <em>No active listings</em>
+    <div class="tab-content" id="pills-tabContent">
+
+        <div class="tab-pane show active" id="pills-pet-type" role="tabpanel" aria-labelledby="pills-pet-type-tab">
+            
+            <div id="accordion">
+                {% for pet_dict in pet_listings %}
+                <div class="card">
+                    <div class="card-header" id="heading{{ forloop.counter }}">
+                    <h5 class="mb-0">
+                        <button class="btn btn-link" data-toggle="collapse" data-target="#collapse{{ forloop.counter }}" aria-expanded="true" aria-controls="collapse{{ forloop.counter }}">
+                            {% for pet_type in pet_dict %}
+                                {{ pet_type }} Costumes
                             {% endfor %}
-                        {% endfor %}
-                    </ul>
+                        </button>
+                    </h5>
+                    </div>
+                
+                    <div id="collapse{{ forloop.counter }}" class="collapse" aria-labelledby="heading{{ forloop.counter }}" data-parent="#accordion">
+                        <div class="card-body">
+                            <ul>
+                                {% for pet_type, listings in pet_dict.items %}
+                                    {% for listing in listings %}
+                                        <li><a href="{% url 'listing' listing.id %}">{{ listing.title }} ${{ listing.current_price }}</a></li>
+                                    {% empty %}
+                                        <em>No active listings</em>
+                                    {% endfor %}
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
                 </div>
+                {% endfor %}
             </div>
-        </div>
-        {% endfor %}
-      </div>
 
+        </div>
+
+        <div class="tab-pane" id="pills-category" role="tabpanel" aria-labelledby="pills-category-tab">
+            <h3>Costume Categories</h3>
+            <p> lots of content for categories</p>
+        </div>
+
+    </div>
+</div>
 {% endblock %}
