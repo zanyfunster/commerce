@@ -394,8 +394,8 @@ def watchlist(request):
 def comment_edit(request, listing_id):
 
     user = request.user
+
+    
     
 
-    return render(request, "auctions/watchlist.html", {
-        "listings": listings
-    })
+    return HttpResponseRedirect(reverse("listing", kwargs={'listing_id': listing_id}))

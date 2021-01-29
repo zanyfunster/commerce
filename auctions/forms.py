@@ -6,7 +6,7 @@ from urllib.error import URLError
 from urllib.parse import quote_plus, urlparse
 import requests
 
-from .models import Bid, Listing, Pet, Category
+from .models import Bid, Listing, Pet, Category, Comment
 from .util import GetListingBids
 
 class BidForm(forms.ModelForm):
@@ -117,3 +117,16 @@ class AddListingForm(forms.ModelForm):
         else:        
             # return imageURL 
             return None
+
+
+class CommentForm(forms.ModelForm):
+    class Meta:
+        model = Comment
+        fields = '__all__'
+        labels = {
+            'amount': 'Bid Amount'
+        }
+        widgets = {
+            'item': forms.HiddenInput(),
+            'bidder': forms.HiddenInput()
+        }
