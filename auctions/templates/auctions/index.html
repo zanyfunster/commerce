@@ -13,11 +13,12 @@
             <a href="{% url 'listing' listing.id %}">
             {{ listing.title }}
             </a>
+            - Current Price: {{ listing.current_price }}
         </li>
         {% endfor %}
     </ul>
 
-    <h2>Closed Listings</h2>
+    <h2>Closed Auctions</h2>
 
     <ul>
         {% for listing in ended %}
@@ -25,6 +26,7 @@
             <a href="{% url 'listing' listing.id %}">
             {{ listing.title }}
             </a>
+            - Winner: {{ listing.winner }}
         </li>
         {% endfor %}
     </ul>

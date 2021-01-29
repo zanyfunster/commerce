@@ -15,8 +15,8 @@ from .util import GetListingBids, GetHighestBidder, CapitalizeTitle
 
 def index(request):
     return render(request, "auctions/index.html", {
-        "listings": Listing.objects.filter(status='Active'),
-        "ended": Listing.objects.filter(status='Closed')
+        "listings": Listing.objects.order_by('-last_modified').filter(status='Active'),
+        "ended": Listing.objects.order_by('-last_modified').filter(status='Closed')
     })
 
 
@@ -77,7 +77,7 @@ def listing(request, listing_id):
     # get listing info, high bid or reserve for price, and bid history
     listing_bid = GetListingBids(listing_id)
     listing = listing_bid[0]
-    price = listing_bid[1]
+    price = listing.current_price
     bids = listing_bid[2]
     user = request.user
     categories = listing.categories.all()
@@ -125,11 +125,14 @@ def bid(request, listing_id):
         
         # get bid amount from form 
         bid_form = BidForm(request.POST)
+        listing = Listing.objects.get(pk=listing_id)
 
         # if bid is valid
         if bid_form.is_valid():
 
             bid = bid_form.save()
+            listing.current_price = bid.amount
+            listing.save()
             listing = bid.item
             bidder = bid.bidder
 
@@ -216,17 +219,18 @@ def close(request, listing_id):
     if request.method == "POST":
 
         listing = Listing.objects.get(pk=listing_id)
-        listing.status = 'Closed'
-        listing.save()
-
         high_bidder = GetHighestBidder(listing_id)
+        listing.winner = high_bidder
 
         if high_bidder is not None:
-            winner = f"The winner is {high_bidder}!"
+            winner_message = f"Winner: {listing.winner}"
         else:
-            winner = "No one bid on this auction, so there is no winner!"
+            winner_message = "No bids. No winner."
+
+        listing.status = 'Closed'
+        listing.save()
         
-        ended_message = f"You ended this auction. {winner}"
+        ended_message = f"You ended this auction. {winner_message}"
         messages.add_message(request, messages.WARNING, ended_message)
 
         return HttpResponseRedirect(reverse("listing", kwargs={'listing_id': listing_id}))

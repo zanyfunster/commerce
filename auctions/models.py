@@ -33,6 +33,7 @@ class Listing(models.Model):
     description = models.TextField(max_length=350)
     imageURL = models.URLField(max_length=250, blank=True, null=True)
     listing_created = models.DateField(auto_now_add=True)
+    last_modified = models.DateTimeField(auto_now=True, blank=True, null=True)
     creator = models.ForeignKey(User, on_delete=models.CASCADE, related_name="listings_by_creator")
     winner = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True, related_name="winnings")
     STATUS = Choices('Active', 'Closed')

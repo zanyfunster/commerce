@@ -9,7 +9,7 @@ def GetListingBids(listing_id):
     # if there are any existing bids
     if len(bids) > 0:
         # set price to current highest bid
-        price = bids[0].amount
+        price = listing.current_price
     # if no bids yet, set price to reserve
     else:
         price = listing.reserve

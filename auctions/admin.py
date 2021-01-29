@@ -4,7 +4,7 @@ from django.contrib import admin
 from .models import Bid, Comment, User, Listing, Category, Pet
 
 class ListingAdmin(admin.ModelAdmin):
-    list_display = ("title", "description", "listing_created", "creator", "status")
+    list_display = ("title", "description", "status", "last_modified", "listing_created", "creator")
 
 class BidAdmin(admin.ModelAdmin):
     list_display = ("bidder", "item", "amount", "bid_timestamp")
