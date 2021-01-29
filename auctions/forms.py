@@ -124,9 +124,9 @@ class CommentForm(forms.ModelForm):
         model = Comment
         fields = '__all__'
         labels = {
-            'amount': 'Bid Amount'
+            'comment_text': 'Leave a comment'
         }
         widgets = {
-            'item': forms.HiddenInput(),
-            'bidder': forms.HiddenInput()
+            'commenter': forms.HiddenInput(),
+            'topic': forms.HiddenInput()
         }

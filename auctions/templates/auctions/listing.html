@@ -63,12 +63,32 @@
 
     <h4>Bid History</h4>
     
+    <ul>
     {% for bid in bids %}
         <li>
             {{ bid.bidder }} bid ${{ bid.amount }} on {{ bid.bid_timestamp|date:"n/j/y" }} {{ bid.bid_timestamp|time:"H:i e" }} 
         </li>
+    
     {% empty %}
         <em>No bids!</em>
     {% endfor %}
+    </ul>
+
+    <h4>Comments</h4>
+
+    {% for comment in comments %}
+        <li>
+            <p>{{ comment.commenter }} said:</p> <p>{{ comment.comment_text }}</p>
+            <p>{{ comment.comment_timestamp|date:"n/j/y" }} {{ comment.comment_timestamp|time:"H:i e" }} </p>
+        </li>
+    {% empty %}
+        <em>No comments!</em>
+    {% endfor %}
+
+    <form action="{% url 'comment_edit' listing.id %}" method="POST">
+        {% csrf_token %}
+        {{ comment_form.as_p }}
+        <input type="submit" value="Submit">
+    </form>
 
 {% endblock %}

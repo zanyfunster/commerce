@@ -65,11 +65,14 @@ class Comment(models.Model):
 
     commenter = models.ForeignKey(User, on_delete=models.CASCADE, related_name="comments_by_user")
     topic = models.ForeignKey(Listing, on_delete=models.CASCADE, related_name="comments_by_topic")
-    comment_text = models.TextField(max_length=350)
+    comment_text = models.TextField(max_length=350, null=True)
     comment_timestamp = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"{self.commenter} on {self.listing}"
+        return f"{self.commenter}"
+
+    class Meta:
+        ordering = ['-comment_timestamp']
 
 class WatchedListing(models.Model):
 

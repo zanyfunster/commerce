@@ -9,7 +9,7 @@ from django.forms import HiddenInput
 from django.http import JsonResponse
 
 from .models import User, Listing, Bid, Comment, Pet, Category, WatchedListing
-from .forms import BidForm, AddListingForm
+from .forms import BidForm, AddListingForm, CommentForm
 from .util import GetListingBids, GetHighestBidder, CapitalizeTitle
 
 
@@ -120,6 +120,12 @@ def listing(request, listing_id):
     else:
         watchlisted = True
 
+    # add comment form initialized with commenter and topic
+    comment_form = CommentForm(initial={'commenter': request.user.id, 'topic': listing_id})
+
+    # populate comments section
+    comments = Comment.objects.filter(topic=listing)
+
     return render(request, "auctions/listing.html", {
         "owner_status": owner_listing_status,
         "listing": listing,
@@ -128,7 +134,9 @@ def listing(request, listing_id):
         "bid_form": bid_form,
         "categories": categories,
         "watchlisted": watchlisted,
-        "watchers": watchers
+        "watchers": watchers,
+        "comment_form": comment_form,
+        "comments": comments
     })
 
 
@@ -393,9 +401,34 @@ def watchlist(request):
 @login_required()
 def comment_edit(request, listing_id):
 
-    user = request.user
+    # comment submitted from listing form   
+    if request.method == "POST":
+
+        # get form data
+        comment_form = CommentForm(request.POST)
+
+        # new listing form and server-side form validation
+        if comment_form.is_valid():
+
+            comment = comment_form.save()
+
+            comment_msg = f"Your comment was submitted."
+            messages.add_message(request, messages.SUCCESS, comment_msg)
+
+            return HttpResponseRedirect(reverse("listing", kwargs={'listing_id': listing_id}))
+
+        # new listing fails server-side form validation
+        else:
+
+            error_message = f"There was an error processing your comment."
+            messages.add_message(request, messages.WARNING, error_message)  
+            return HttpResponseRedirect(reverse("listing", kwargs={'listing_id': listing_id}))
+    
+    else:
+        error_message = f"Comments can only be submitted on a listing page."
+        messages.add_message(request, messages.WARNING, error_message)  
+        return HttpResponseRedirect(reverse("listing", kwargs={'listing_id': listing_id}))
 
     
-    
 
-    return HttpResponseRedirect(reverse("listing", kwargs={'listing_id': listing_id}))
+    
