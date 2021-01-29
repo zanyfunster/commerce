@@ -13,6 +13,9 @@ class BidForm(forms.ModelForm):
     class Meta:
         model = Bid
         fields = '__all__'
+        labels = {
+            'amount': 'Bid Amount'
+        }
         widgets = {
             'item': forms.HiddenInput(),
             'bidder': forms.HiddenInput()

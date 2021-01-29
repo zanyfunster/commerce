@@ -34,13 +34,23 @@
     {% endif %}
 
     {% if user.is_authenticated and bid_form %}
-
+    <div>
         <form action="{% url 'bid' listing.id %}" method="POST">
             {% csrf_token %}
             {{ bid_form.as_p }}
             <input type="submit" value="Place Bid">
         </form>
+    </div>
 
+    <div>
+        
+        {% if watchlisted %}
+            <a href="{% url 'watchlist_edit' listing.id %}" class="btn btn-secondary btn-sm active" role="button" aria-pressed="true">Remove from Watchlist</a>
+        {% else %}
+            <small>{{ watchers }} user{{ watchers|pluralize}} currently watching</small>
+            <a href="{% url 'watchlist_edit' listing.id %}" class="btn btn-primary btn-sm active" role="button" aria-pressed="true">Add to Watchlist</a>
+        {% endif %}
+    </div>
     {% elif user.is_authenticated and not bid_form %}
 
         <p>This auction has ended. Bidding is closed.</p>

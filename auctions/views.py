@@ -6,8 +6,9 @@ from django.shortcuts import render
 from django.urls import reverse
 from django.contrib import messages
 from django.forms import HiddenInput
+from django.http import JsonResponse
 
-from .models import User, Listing, Bid, Comment, Pet, Category
+from .models import User, Listing, Bid, Comment, Pet, Category, WatchedListing
 from .forms import BidForm, AddListingForm
 from .util import GetListingBids, GetHighestBidder, CapitalizeTitle
 
@@ -107,13 +108,27 @@ def listing(request, listing_id):
         # set bid form to none so it won't display
         bid_form = None
 
+    # check user's watchlist for item to assign true/false to watchlisted
+    watchlist_check = WatchedListing.objects.filter(watcher=user,item=listing)
+    watching_all = WatchedListing.objects.filter(item=listing)
+    watchers = len(watching_all)
+
+    # empty query returned so not on watchlist
+    if len(watchlist_check) == 0:
+        watchlisted = False
+    # query had results, so already on watchlist
+    else:
+        watchlisted = True
+
     return render(request, "auctions/listing.html", {
         "owner_status": owner_listing_status,
         "listing": listing,
         "bids": bids,
         "price": price,
         "bid_form": bid_form,
-        "categories": categories
+        "categories": categories,
+        "watchlisted": watchlisted,
+        "watchers": watchers
     })
 
 
@@ -140,7 +155,8 @@ def bid(request, listing_id):
             messages.add_message(request, messages.SUCCESS, bid_message)
 
             return render(request, "auctions/index.html", {
-                "listings": Listing.objects.filter(status='Active')
+                "listings": Listing.objects.filter(status='Active'),
+                "ended": Listing.objects.order_by('-last_modified').filter(status='Closed')
             })
 
         # invalid bid form returns to listing page with django generated error messages
@@ -319,5 +335,67 @@ def category(request, slug):
 
     return render(request, "auctions/category.html", {
         "category": category,
+        "listings": listings
+    })
+
+
+
+@login_required()
+def watchlist_edit(request, listing_id):
+    
+    listing = Listing.objects.get(pk=listing_id)
+    user = request.user
+    
+    # check if listing is on watchlist
+    watchlist_check = WatchedListing.objects.filter(watcher=user,item=listing)
+
+    # if watchlist_check is zero and item is not on watchlist, add to watchlist
+    if len(watchlist_check) == 0:
+        watched_listing = WatchedListing()
+        watched_listing.item = listing
+        watched_listing.save()
+        watched_listing.watcher.add(user)
+
+        watched_message = f"Added {watched_listing.item} to your watchlist!"
+        messages.add_message(request, messages.SUCCESS, watched_message)
+
+        return HttpResponseRedirect(reverse("listing", kwargs={'listing_id': listing_id}))
+
+    # else if check returns one listing, remove from watchlist
+    elif len(watchlist_check) == 1:
+
+        watchlist_check.delete()
+
+        deleted_message = f"Removed {listing} from your watchlist!"
+        messages.add_message(request, messages.WARNING, deleted_message)
+
+        return HttpResponseRedirect(reverse("listing", kwargs={'listing_id': listing_id}))
+
+    # if anything else happens, something screwy happened
+    else:
+        error_message = f"There was an error editing your watchlist."
+        messages.add_message(request, messages.WARNING, error_message)
+
+        return HttpResponseRedirect(reverse("listing", kwargs={'listing_id': listing_id}))
+
+
+
+@login_required()
+def watchlist(request):
+
+    user = request.user
+    listings = user.watching.all()
+
+    return render(request, "auctions/watchlist.html", {
+        "listings": listings
+    })
+
+@login_required()
+def comment_edit(request, listing_id):
+
+    user = request.user
+    
+
+    return render(request, "auctions/watchlist.html", {
         "listings": listings
     })

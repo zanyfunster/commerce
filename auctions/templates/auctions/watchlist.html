@@ -1,0 +1,18 @@
+{% extends "auctions/layout.html" %}
+
+{% block title %}
+    Pet Costumes Auction
+{% endblock %}
+
+{% block body %}
+    <h2>{{ request.user }} Watchlist</h2>
+
+    <ul>
+        {% for listing in listings %}
+        <li>
+            <a href="{% url 'listing' listing.item.id %}">{{ listing }}</a> <a href="{% url 'watchlist_edit' listing.item.id %}" class="badge badge-secondary">Remove</a> 
+        </li>
+        {% endfor %}
+    </ul>
+
+{% endblock %}

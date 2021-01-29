@@ -30,7 +30,7 @@ class Pet(models.Model):
 class Listing(models.Model):
 
     title = models.CharField(max_length=50) 
-    description = models.TextField(max_length=350)
+    description = models.TextField(max_length=250)
     imageURL = models.URLField(max_length=250, blank=True, null=True)
     listing_created = models.DateField(auto_now_add=True)
     last_modified = models.DateTimeField(auto_now=True, blank=True, null=True)
@@ -40,12 +40,15 @@ class Listing(models.Model):
     status = StatusField()
     current_price = models.DecimalField(max_digits=10, blank=True, null=True, decimal_places=2)
     reserve = models.DecimalField(max_digits=10, decimal_places=2, default=0.01, validators = [MinValueValidator(Decimal('0.01'))])
-    bidders = models.ManyToManyField(User, blank=True, related_name="listings")
+    # bidders = models.ManyToManyField(User, blank=True, related_name="listings")
     categories = models.ManyToManyField(Category, related_name="items_by_category")
     pet_type = models.ForeignKey(Pet, on_delete=models.CASCADE, related_name="items_by_pet")
 
     def __str__(self):
         return f"{self.title}"
+
+    class Meta:
+        ordering = ['-last_modified']
 
 
 class Bid(models.Model):
@@ -62,7 +65,16 @@ class Comment(models.Model):
 
     commenter = models.ForeignKey(User, on_delete=models.CASCADE, related_name="comments_by_user")
     topic = models.ForeignKey(Listing, on_delete=models.CASCADE, related_name="comments_by_topic")
-    comment_timestamp = models.DateField(auto_now_add=True)
+    comment_text = models.TextField(max_length=350)
+    comment_timestamp = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return f"{self.commenter} on {self.listing}"
+
+class WatchedListing(models.Model):
+
+    item = models.ForeignKey(Listing, related_name="watched", on_delete=models.CASCADE, null=True)
+    watcher = models.ManyToManyField(User, related_name="watching")
+
+    def __str__(self):
+        return f"{self.item}"
