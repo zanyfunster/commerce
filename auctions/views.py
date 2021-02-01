@@ -8,17 +8,86 @@ from django.contrib import messages
 from django.forms import HiddenInput
 from django.http import JsonResponse
 
+
 from .models import User, Listing, Bid, Comment, Pet, Category, WatchedListing
 from .forms import BidForm, AddListingForm, CommentForm
 from .util import GetListingBids, GetHighestBidder, CapitalizeTitle
 
 
-
+# home page view
 def index(request):
-    return render(request, "auctions/index.html", {
-        "listings": Listing.objects.order_by('-last_modified').filter(status='Active'),
-        "ended": Listing.objects.order_by('-last_modified').filter(status='Closed')
-    })
+
+    # if user is signed in, get info to display "dashboard"
+    if request.user.is_authenticated:
+
+        user = request.user
+
+        # gather all listings on watchlist
+        watchlist_listings = user.watching.all()
+
+        # gather all listings created by this user
+        owned_listings = user.listings_by_creator.all()
+
+        # gather all listings won by this user
+        winnings = user.winnings.all()
+
+        # this next section could probably be done much more simply, but I don't understand model queries well enough
+        # the aim is to sort the users bids into highest active bids, currently outbid, and lost auctions
+
+        # get all of users' bids
+        user_bids = user.bids.all()
+
+        # create an empty set for items the user has bid on
+        user_bidding_on_items = set()
+
+        # iterate through users bids
+        for bid in user_bids:
+            # this will create a set of item ids the user has bid on, since sets won't take duplicates
+            item = bid.item.id
+            user_bidding_on_items.add(item)
+
+        # create an empty list to store most recent bids on each item
+        most_recent_bids = []
+
+        # now iterate through the set of items the user has bid on
+        for item in user_bidding_on_items:
+            # get the latest bid on each item
+            last_bid_on_item = Bid.objects.filter(item=item,bidder=user).latest('bid_timestamp')
+            # add it to list of most recent bids
+            most_recent_bids.append(last_bid_on_item)
+        
+        # create three empty lists to store bid types - lost auctions, highest active bids, and outbid
+        lost_list = []
+        high_list = []
+        outbid_list = []
+
+        # iterate through most recent bids on each item the user has bids on
+        for bid in most_recent_bids:
+            # if active and last bid is lower than current price, user has been outbid
+            if bid.amount < bid.item.current_price and bid.item.status == 'Active':
+                outbid_list.append(bid)
+            # if closed and last bid was lower than current price, auction was lost
+            elif bid.amount < bid.item.current_price and bid.item.status == 'Closed':
+                lost_list.append(bid)
+            # if active and bid is same as current price, currently highest bidder
+            elif bid.amount == bid.item.current_price and bid.item.status == 'Active':
+                high_list.append(bid)
+
+        return render(request, "auctions/index.html", {
+            "listings": Listing.objects.order_by('-last_modified').filter(status='Active'),
+            "watchlist": watchlist_listings,
+            "owned": owned_listings,
+            "winnings": winnings,
+            "lost": lost_list,
+            "high": high_list,
+            "outbid": outbid_list
+        })
+    # user is not signed in, so display active listings 
+    else:
+
+        return render(request, "auctions/index.html", {
+            "listings": Listing.objects.order_by('-last_modified').filter(status='Active')
+        })
 
 
 def login_view(request):
@@ -162,10 +231,7 @@ def bid(request, listing_id):
             bid_message = f"Hooray {bidder.username}! You bid ${bid.amount} on {listing.title}!"
             messages.add_message(request, messages.SUCCESS, bid_message)
 
-            return render(request, "auctions/index.html", {
-                "listings": Listing.objects.filter(status='Active'),
-                "ended": Listing.objects.order_by('-last_modified').filter(status='Closed')
-            })
+            return HttpResponseRedirect(reverse("listing", kwargs={'listing_id': listing_id}))
 
         # invalid bid form returns to listing page with django generated error messages
         else:
@@ -189,6 +255,7 @@ def bid(request, listing_id):
         messages.add_message(request, messages.WARNING, bid_message)
         
         return render(request, "auctions/index.html")
+
 
 # create a new listing route
 @login_required()

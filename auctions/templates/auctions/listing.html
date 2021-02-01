@@ -1,4 +1,6 @@
 {% extends "auctions/layout.html" %}
+{% load my_filters %}
+
 {% block title %}
     Pet Costumes Auction: {{ listing.title }}
 {% endblock %}
@@ -28,9 +30,10 @@
     <img src="{{ listing.imageURL }}">
 
     {% if bids|length > 0 %}
-        <h4>Highest Bid: ${{ price }}</h4>
+        <h4>Current Bid: {{ price | currency }}</h4>
+        <p><em>{{ bids | length }} active bidder{{ bids|pluralize}}</em></p>
     {% else %}
-        <h4>Reserve Price: ${{ price }}</h4>
+        <h4>Reserve Price: {{ price | currency }}</h4>
     {% endif %}
 
     {% if user.is_authenticated and bid_form %}
@@ -66,7 +69,7 @@
     <ul>
     {% for bid in bids %}
         <li>
-            {{ bid.bidder }} bid ${{ bid.amount }} on {{ bid.bid_timestamp|date:"n/j/y" }} {{ bid.bid_timestamp|time:"H:i e" }} 
+            {{ bid.bidder }} bid {{ bid.amount | currency }} on {{ bid.bid_timestamp|date:"n/j/y" }} {{ bid.bid_timestamp|time:"H:i e" }} 
         </li>
     
     {% empty %}

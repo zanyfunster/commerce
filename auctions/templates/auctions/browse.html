@@ -1,5 +1,5 @@
 {% extends "auctions/layout.html" %}
-
+{% load my_filters %}
 {% block title %}
     Pet Costumes Auctions
 {% endblock %}
@@ -38,7 +38,7 @@
                                 {% for pet_type, listings in pet_dict.items %}
                                     {% for listing in listings %}
                                         {% if forloop.counter < 5 %}
-                                            <li><a href="{% url 'listing' listing.id %}">{{ listing.title }} ${{ listing.current_price }}</a></li>
+                                            <li><a href="{% url 'listing' listing.id %}">{{ listing.title }} {{ listing.current_price | currency }}</a></li>
                                         {% elif forloop.last %}
                                             <p><a href="{% url 'category' pet_type|slugify %}">View all {{ pet_type }} listings</a></p>
                                         {% endif %}
@@ -76,7 +76,7 @@
                                 {% for category_name, category_listings in category_dict.items %}
                                     {% for listing in category_listings %}
                                         {% if forloop.counter < 5 %}
-                                            <li><a href="{% url 'listing' listing.id %}">{{ listing.title }} ${{ listing.current_price }}</a></li>
+                                            <li><a href="{% url 'listing' listing.id %}">{{ listing.title }} [{{ listing.pet_type }}] Current Price: {{ listing.current_price | currency }}</a></li>
                                         {% elif forloop.last %}
                                             <p><a href="{% url 'category' category_name|slugify %}">View all {{ category_name }} listings </a></p>
                                         {% endif %}
