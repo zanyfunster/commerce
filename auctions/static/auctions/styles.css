@@ -1,5 +1,6 @@
 body {
     padding: 10px;
+    background-color: #fcf3da;
 }
 
 form ul {
@@ -9,4 +10,92 @@ form ul {
 #id_categories
 {
     list-style-type: none;
+}
+
+.bg-yellow {
+    background-color:#FFC72B;
+}
+
+.bg-brown {
+    background-color:#362804;
+}
+
+.nav-link {
+    color: #362804;
+    font-weight: 700;
+    font-size: medium;
+}
+
+.nav-main>li>a:focus, .nav-main>li>a:hover {
+    color: ivory;
+    text-shadow: 1px 1px 2px #362804;
+}
+
+.txt-big {
+    font-family: 'Gorditas', cursive;
+    font-size: 45px;
+    font-weight: 700;
+    color: #362804;
+}
+
+h1, h2, h3 {
+        font-family: 'Gorditas', cursive;
+        font-size: 30px;
+        font-weight: 400;
+}
+
+p, a, .txt-small {
+    font-family: 'Lato', sans-serif;
+}
+
+button {
+    background-color: #103DDE;
+}
+
+a:hover {
+    color: #816827;
+}
+
+a {
+    color: #103DDE;
+}
+
+.main-content {
+    background-color: ivory;
+}
+
+
+/* custom pill color from https://www.codeply.com/go/WJdJv71mhX/bootstrap-4-tab-pills-with-custom-color */
+/* not active */
+
+.nav-pills .pill-sub .nav-link:not(.active) {
+    background-color: #362804;
+    color: ivory;
+}
+
+.nav-pills .pill-section .nav-link:not(.active) {
+    background-color: #362804;
+    color: ivory;
+}
+
+/* active (faded) */
+.nav-pills .pill-sub .nav-link {
+    background-color: ivory;
+    color: #362804;
+}
+
+.nav-pills .pill-section .nav-link {
+    background-color: #362804;
+    color: ivory;
+}
+
+.nav-pills .pill-section .nav-link .disabled {
+    color: ivory;
+}
+
+.browse-header {
+    color: #002091;
+    font-family: 'Gorditas', cursive;
+    font-size: 22px;
+    font-weight: 400;
 }
