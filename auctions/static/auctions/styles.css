@@ -1,101 +1,189 @@
 body {
-    padding: 10px;
-    background-color: #fcf3da;
+  padding: 10px;
+  background-color: #f9f6ff;
 }
 
 form ul {
-    list-style-type: none;
+  list-style-type: none;
 }
 
-#id_categories
-{
-    list-style-type: none;
+#id_categories {
+  list-style-type: none;
+}
+
+.bg-violet {
+  background-color: #5500E0;
 }
 
 .bg-yellow {
-    background-color:#FFC72B;
-}
-
-.bg-brown {
-    background-color:#362804;
+  background-color: #E0D816;
 }
 
 .nav-link {
-    color: #362804;
-    font-weight: 700;
-    font-size: medium;
+  color: #00E3AE;
+  font-weight: 700;
+  font-size: medium;
 }
 
-.nav-main>li>a:focus, .nav-main>li>a:hover {
-    color: ivory;
-    text-shadow: 1px 1px 2px #362804;
+.nav-main > li > a:focus, .nav-main > li > a:hover {
+  color: ivory;
+  text-shadow: 1px 2px 2px #270164;
 }
 
-.txt-big {
-    font-family: 'Gorditas', cursive;
-    font-size: 45px;
-    font-weight: 700;
-    color: #362804;
+.brand-txt {
+  font-family: "Gorditas", cursive;
+  font-size: 45px;
+  font-weight: 700;
+  color: #00E3AE;
 }
 
 h1, h2, h3 {
-        font-family: 'Gorditas', cursive;
-        font-size: 30px;
-        font-weight: 400;
+  font-family: "Gorditas", cursive;
+  font-weight: 400;
+  color: #270164;
 }
 
-p, a, .txt-small {
-    font-family: 'Lato', sans-serif;
+p, a {
+  font-family: "Lato", sans-serif;
 }
 
-button {
-    background-color: #103DDE;
+.txt-small {
+  font-family: "Lato", sans-serif;
+  font-size: small;
 }
 
 a:hover {
-    color: #816827;
+  color: #00E3AE;
 }
 
 a {
-    color: #103DDE;
+  color: #5500E0;
 }
 
 .main-content {
-    background-color: ivory;
+  background-color: #d9f7f0;
 }
 
+.main-lt-bg {
+  background-color: white;
+}
 
 /* custom pill color from https://www.codeply.com/go/WJdJv71mhX/bootstrap-4-tab-pills-with-custom-color */
 /* not active */
-
 .nav-pills .pill-sub .nav-link:not(.active) {
-    background-color: #362804;
-    color: ivory;
+  background-color: #E0D816;
+  color: #270164;
 }
 
 .nav-pills .pill-section .nav-link:not(.active) {
-    background-color: #362804;
-    color: ivory;
+  background-color: #E0D816;
+  color: #270164;
+}
+
+.nav-pills .pill-sub .nav-link:not(.active) {
+  background-color: #E0D816;
+  color: #270164;
+}
+
+.nav-pills .pill-sub .nav-link:not(.active) :hover {
+  background-color: #fffee6;
 }
 
 /* active (faded) */
 .nav-pills .pill-sub .nav-link {
-    background-color: ivory;
-    color: #362804;
+  background-color: #5500E0;
+  color: #00E3AE;
 }
 
 .nav-pills .pill-section .nav-link {
-    background-color: #362804;
-    color: ivory;
+  background-color: #5500E0;
+  color: #E0D816;
 }
 
 .nav-pills .pill-section .nav-link .disabled {
-    color: ivory;
+  color: #270164;
 }
 
 .browse-header {
-    color: #002091;
-    font-family: 'Gorditas', cursive;
-    font-size: 22px;
-    font-weight: 400;
+  color: #270164;
+  font-family: "Gorditas", cursive;
+  font-size: 22px;
+  font-weight: 400;
 }
+
+.listing-img {
+  width: 100%;
+  height: 450px;
+  -o-object-fit: cover;
+     object-fit: cover;
+}
+
+.img-box {
+  width: 100%;
+  height: 450px;
+}
+
+.img-expand-icon {
+  position: absolute;
+  top: 390px;
+  right: 15px;
+  font-size: 18px;
+}
+
+.modal-img {
+  width: 100%;
+}
+
+#listing-owner-box {
+  background-color: #f9f6ff;
+  font-family: "Lato", sans-serif;
+  font-size: medium;
+  font-weight: bold;
+}
+
+.recent-bids {
+  list-style-type: none;
+  padding-left: 0;
+  font-size: small;
+}
+
+#bid-box {
+  width: 100%;
+  height: 200px;
+}
+
+#comment-list {
+  list-style-type: none;
+  padding-left: 0;
+  font-family: "Lato", sans-serif;
+}
+
+.txt-comment {
+  margin-left: 5px;
+}
+
+.card-img-thumbnail {
+  width: 18rem;
+  height: 200px;
+  -o-object-fit: cover;
+     object-fit: cover;
+}
+
+.img-price-bg {
+  top: 0px;
+  left: 0px;
+  width: 6rem;
+  height: 18px;
+  background-color: #00E3AE;
+  border-radius: 0px 0px 20px;
+}
+
+.img-price-txt {
+  font-size: 18px;
+  font-weight: bold;
+  color: #270164;
+  font-family: "Lato", sans-serif;
+  margin-top: -12px;
+  margin-left: -10px;
+}
+/*# sourceMappingURL=styles.css.map */

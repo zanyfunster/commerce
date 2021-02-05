@@ -5,16 +5,37 @@
 {% endblock %}
 
 {% block body %}
-    <h2>Active Listings: {{ category }}</h2>
 
-    <ul>
-        {% for listing in listings %}
-        <li>
-            <a href="{% url 'listing' listing.id %}">
-            {{ listing.title }}
-            </a>
-        </li>
-        {% endfor %}
-    </ul>
+<div class="container main-content">
+    <div class="row pt-1 bg-yellow">
+        <div class="col">
+        <ul class="nav nav-pills mb-1 sub-nav" id="pills-tab" role="tablist">
+            <li class="nav-item pill-sub" role="presentation">
+                <a href="{% url 'browse' %}" class="nav-link" id="pills-subnav">Browse: {{ category }} Costumes</a>
+            </li>
+        </ul>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col p-4 ">
+            <div class="container rounded border border-light main-lt-bg">
+                <div class="row">
+                <div class="col p-4">
+                    <h1>{{ category }} Costumes</h1>
+                    <ul>
+                        {% for listing in listings %}
+                        <li>
+                            <a href="{% url 'listing' listing.id %}">
+                            {{ listing.title }}
+                            </a>
+                        </li>
+                        {% endfor %}
+                    </ul>
 
+                </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}

@@ -12,14 +12,15 @@
         <link href="{% static 'auctions/styles.css' %}" rel="stylesheet">
         <link rel="preconnect" href="https://fonts.gstatic.com"> 
         <link href="https://fonts.googleapis.com/css2?family=Gorditas:wght@400;700&family=Lato&display=swap" rel="stylesheet">
+        <script src="https://kit.fontawesome.com/5504ca8e08.js" crossorigin="anonymous"></script>
     </head>
     <body>
         <div class="container">
         <div class="row">
             <div class="col">
-                <nav class="navbar sticky-top bg-yellow">
+                <nav class="navbar sticky-top bg-violet">
                     
-                    <a class="navbar-brand" href="{% url 'index' %}"><span class="txt-dark txt-big">Pet Costume Auctions</span></a>
+                    <a class="navbar-brand" href="{% url 'index' %}"><span class="brand-txt">Pet Costume Auctions</span></a>
                     <ul class="nav nav-main justify-content-start">   
                     {% if user.is_authenticated %}
                         <li class="nav-item">
@@ -54,17 +55,7 @@
         </div>
         <div class="row">
             <div class="col">
-                {% if messages %}
-                <div id="messages">
-                    
-                    {% for message in messages %}
-                        <div class="alert alert-{% if message.tags %}{{ message.tags }}"{% endif %} role="alert">
-                            {{ message }}
-                        </div>
-                    {% endfor %}     
-                            
-                </div>
-                {% endif %}
+                
 
                 {% block body %}
 

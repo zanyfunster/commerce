@@ -14,7 +14,7 @@ class BidForm(forms.ModelForm):
         model = Bid
         fields = '__all__'
         labels = {
-            'amount': 'Bid Amount'
+            'amount': 'Place a bid:'
         }
         widgets = {
             'item': forms.HiddenInput(),
@@ -124,9 +124,10 @@ class CommentForm(forms.ModelForm):
         model = Comment
         fields = '__all__'
         labels = {
-            'comment_text': 'Leave a comment'
+            'comment_text': ''
         }
         widgets = {
             'commenter': forms.HiddenInput(),
-            'topic': forms.HiddenInput()
+            'topic': forms.HiddenInput(),
+            'comment_text': forms.Textarea(attrs={'rows':3, 'cols':35})
         }
