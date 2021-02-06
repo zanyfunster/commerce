@@ -16,7 +16,7 @@
                 <a class="nav-link disabled" id="pills-bids-tab" data-bs-toggle="pill" href="" role="tab" aria-controls="pills-bids" aria-selected="false">{{ user | capfirst }}'s Dashboard:</a>
             </li>
             <li class="nav-item pill-sub" role="presentation">
-                <a class="nav-link active" id="pills-bids-tab" data-bs-toggle="pill" href="#pills-bids" role="tab" aria-controls="pills-bids" aria-selected="false"><i class="fas fa-dollar-sign"></i> Bids</a>
+                <a class="nav-link active" id="pills-bids-tab" data-bs-toggle="pill" href="#pills-bids" role="tab" aria-controls="pills-bids" aria-selected="false"><i class="fas fa-hand-holding-usd"></i> Bids</a>
             </li>
             <li class="nav-item pill-sub" role="presentation">
                 <a class="nav-link" id="pills-owned-tab" data-bs-toggle="pill" href="#pills-owned" role="tab" aria-controls="pills-owned" aria-selected="false"><i class="fas fa-cash-register"></i> Listings</a>
@@ -56,8 +56,13 @@
                     <div class="tab-pane show active" id="pills-bids" role="tabpanel" aria-labelledby="pills-bids-tab">
                         
                         <h1>{{ user | capfirst }}'s Bids</h1>
-
+                        
                         <hr>
+
+                        {% if outbid|length == 0 and high|length == 0 and lost|length == 0 %}
+                        <p>No bids yet! Better start <a href="{% url 'browse' %}">browsing!</a></p>
+                        {% endif %}
+                        
                         {% if outbid|length > 0 %}
                         <h2 class="text-center pt-3 pb-3">Outbid</h2>
 
@@ -115,59 +120,77 @@
                     </div>
                     <div class="tab-pane show" id="pills-owned" role="tabpanel" aria-labelledby="pills-owned-tab">
 
-                        <h1>{{ user | capfirst }}'s Listings</h1>
+                        <h1>{{ user | capfirst }}'s Seller Listings</h1>
                         <hr>
-                        <ul>
+
+                        <div class="card-columns text-center">
+
                             {% for listing in owned %}
-                            <li>
-                                <a href="{% url 'listing' listing.id %}">
-                                {{ listing.title }}
-                                </a>
+                            <div class="card text-center" style="width: 18rem;">
+                                <a href="{% url 'listing' listing.id %}"><img class="card-img-top card-img-thumbnail" src="{{ listing.imageURL }}" alt="Card image cap"></a>
                                 {% if listing.current_price == listing.reserve %}
-                                    <em>Reserve not met!</em>
+                                <div class="card-img-overlay img-no-bids-bg"><div class="img-no-bids-txt">Reserve not met!</div></div>
                                 {% else %}
-                                    - Current Bid: {{ listing.current_price | currency }}
+                                <div class="card-img-overlay img-price-bg"><div class="img-price-txt">{{ listing.current_price | currency }}</div></div>
                                 {% endif %}
-                            </li>
+                                <div class="card-body">
+                                    <h5 class="card-title"><a href="{% url 'listing' listing.id %}"><h3>{{ listing.title }}</h3></a></h5>
+                                    <a href="{% url 'listing' listing.id %}" class="btn btn-primary btn-sm">View Listing</a>
+                                </div>
+                            </div>
                             {% empty %}
-                            <em>You have not created any auctions!</em>
+                            <em>You have not created any listings!</em>
                             {% endfor %}
-                        </ul>
+                            
+                        </div>
 
                     </div>
                     <div class="tab-pane show" id="pills-watching" role="tabpanel" aria-labelledby="pills-watching-tab">
 
                         <h1>{{ user | capfirst }}'s Watchlist</h1>
                         <hr>
-                        <ul>
+
+                        <div class="card-columns text-center">
+
                             {% for listing in watchlist %}
-                            <li>
-                                <a href="{% url 'listing' listing.item.id %}">
-                                {{ listing.item }}
-                                </a>
-                                - Current Bid: {{ listing.item.current_price| currency  }}
-                            </li>
+                            <div class="card text-center" style="width: 18rem;">
+                                <a href="{% url 'listing' listing.item.id %}"><img class="card-img-top card-img-thumbnail" src="{{ listing.item.imageURL }}" alt="Card image cap"></a>
+                                <div class="card-img-overlay img-price-bg"><div class="img-price-txt">{{ listing.item.current_price | currency }}</div></div>
+                                <div class="card-body">
+                                    <h5 class="card-title"><a href="{% url 'listing' listing.item.id %}"><h3>{{ listing.item }}</h3></a></h5>                                            
+                                    <div class="row">
+                                        <div class="col-6"><a href="{% url 'listing' listing.item.id %}" class="btn btn-primary btn-sm">View</a></div>
+                                        <div class="col-6"><a href="{% url 'watchlist_edit' listing.item.id %}" class="btn btn-secondary btn-sm" role="button" aria-pressed="true">Unwatch</a></div>
+                                    </div>
+                                </div>
+                            </div>
                             {% empty %}
                             <em>No listings on watchlist!</em>
                             {% endfor %}
-                        </ul>
+                            
+                        </div>
 
                     </div>
                     <div class="tab-pane show" id="pills-winnings" role="tabpanel" aria-labelledby="pills-winnings-tab">
 
                          <h1>{{ user | capfirst }}'s Winnings</h1>
                          <hr>
-                        <ul>
+                         <div class="card-columns text-center">
+
                             {% for listing in winnings %}
-                            <li>
-                                <a href="{% url 'listing' listing.id %}">
-                                {{ listing.title }}
-                                </a>
-                            </li>
+                            <div class="card text-center" style="width: 18rem;">
+                                <a href="{% url 'listing' listing.id %}"><img class="card-img-top card-img-thumbnail" src="{{ listing.imageURL }}" alt="Card image cap"></a>
+                                <div class="card-img-overlay img-price-bg"><div class="img-price-txt">{{ listing.current_price | currency }}</div></div>
+                                <div class="card-body">
+                                    <h5 class="card-title"><a href="{% url 'listing' listing.id %}"><h3>{{ listing.title }}</h3></a></h5>
+                                    <a href="{% url 'listing' listing.id %}" class="btn btn-primary btn-sm">View Listing</a>
+                                </div>
+                            </div>
                             {% empty %}
                             <em>You haven't won any auctions!</em>
                             {% endfor %}
-                        </ul>
+                            
+                        </div>
 
                     </div>
                     
@@ -178,23 +201,31 @@
         </div>
     </div>
     {% else %}
+    <div class="row pt-1 bg-yellow">
+        <div class="col p-3">
+        </div>
+    </div>
     <div class="row">
         <div class="col p-4">
             <div class="container rounded border border-light main-lt-bg">
                 <div class="row">
                 <div class="col p-4 ">
-                <h2>Active Listings</h2>
+                <h1>All Active Listings</h1>
+                <hr>
 
-                    <ul>
+                    <div class="card-columns">
+                    
                         {% for listing in listings %}
-                        <li>
-                            <a href="{% url 'listing' listing.id %}">
-                            {{ listing.title }}
-                            </a>
-                            - Current Price: {{ listing.current_price | currency }}
-                        </li>
+                        <div class="card text-center" style="width: 18rem;">
+                            <a href="{% url 'listing' listing.id %}"><img class="card-img-top card-img-thumbnail" src="{{ listing.imageURL }}" alt="Card image cap"></a>
+                            <div class="card-img-overlay img-price-bg"><div class="img-price-txt">{{ listing.current_price | currency }}</div></div>
+                            <div class="card-body">
+                                <h5 class="card-title"><a href="{% url 'listing' listing.id %}"><h3>{{ listing.title }}</h3></a></h5>
+                                <a href="{% url 'listing' listing.id %}" class="btn btn-primary btn-sm">View Listing</a>
+                            </div>
+                        </div>
                         {% endfor %}
-                    </ul>
+                    </div>
                 </div>
                 </div>
             </div>

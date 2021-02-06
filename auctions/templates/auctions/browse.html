@@ -57,19 +57,41 @@
                 
                     <div id="collapse{{ forloop.counter }}" class="collapse" aria-labelledby="heading{{ forloop.counter }}" data-parent="#accordion">
                         <div class="card-body">
-                            <ul>
+                            <table class="table table-hover table-borderless">
+                                <tbody>
+                                
                                 {% for pet_type, listings in pet_dict.items %}
                                     {% for listing in listings %}
-                                        {% if forloop.counter < 5 %}
-                                            <li><a href="{% url 'listing' listing.id %}">{{ listing.title }} {{ listing.current_price | currency }}</a></li>
+                                    
+                                        {% if forloop.counter < 11 %}
+                                        <tr class="d-flex">
+                                            <td class="col-lg-2 col-md-4"><a href="{% url 'listing' listing.id %}"><img src="{{ listing.imageURL }}" class="rounded browse-img-thumbnail" alt="{{ listing.title }} Image"></a></td>
+                                            <td class="col-lg-7 col-md-5 justify-content-start">
+                                                
+                                                <a href="{% url 'listing' listing.id %}"><h3>{{ listing.title }}</h3></a>
+                                                <p>{{ listing.description }}</p>
+                                                
+                                            </td>
+                                            <td class="col-lg-3"><div class="text-center browse-price-box"><p>High Bid: {{ listing.current_price | currency }}</p></div></td>
+                                        </tr>
                                         {% elif forloop.last %}
-                                            <p><a href="{% url 'category' pet_type|slugify %}">View all {{ pet_type }} listings</a></p>
+                                        <tr class="d-flex">
+                                            <td class="col-12 text-center"><p><strong>
+                                            <a href="{% url 'category' pet_type|slugify %}">View all {{ pet_type }} listings</a>
+                                                </strong></p>
+                                            </td>
+                                        </tr>
                                         {% endif %}
+
                                     {% empty %}
+
                                         <em>No active listings</em>
+                                    
                                     {% endfor %}
                                 {% endfor %}
-                            </ul>
+                                
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                 </div>
@@ -94,20 +116,39 @@
                 
                     <div id="category-collapse{{ forloop.counter }}" class="collapse" aria-labelledby="category-heading{{ forloop.counter }}" data-parent="#accordion">
                         <div class="card-body">
-                            <ul>
+                            <table class="table table-hover table-borderless">
+                                <tbody>
 
                                 {% for category_name, category_listings in category_dict.items %}
                                     {% for listing in category_listings %}
-                                        {% if forloop.counter < 5 %}
-                                            <li><a href="{% url 'listing' listing.id %}">{{ listing.title }} [{{ listing.pet_type }}] Current Price: {{ listing.current_price | currency }}</a></li>
+                                    
+                                        {% if forloop.counter < 11 %}
+                                        <tr class="d-flex">
+                                            <td class="col-lg-2 col-md-4"><a href="{% url 'listing' listing.id %}"><img src="{{ listing.imageURL }}" class="rounded browse-img-thumbnail" alt="{{ listing.title }} Image"></a></td>
+                                            <td class="col-lg-7 col-md-5 justify-content-start">
+                                                
+                                                <a href="{% url 'listing' listing.id %}"><h3>{{ listing.title }}</h3></a>
+                                                <p>{{ listing.description }}</p>
+                                                
+                                            </td>
+                                            <td class="col-lg-3"><div class="text-center browse-price-box"><p>High Bid: {{ listing.current_price | currency }}</p></div></td>
+                                        </tr>
                                         {% elif forloop.last %}
-                                            <p><a href="{% url 'category' category_name|slugify %}">View all {{ category_name }} listings </a></p>
+                                        <tr class="d-flex">
+                                            <td class="col-12 text-center"><p><strong><a href="{% url 'category' category_name|slugify %}">View all {{ category_name }} listings </a></strong></p>
+                                            </td>
+                                        </tr>
                                         {% endif %}
                                     {% empty %}
-                                        <em>No active listings</em>
+                                    <tr class="d-flex">
+                                        <td class="col-12 text-center">
+                                            <p><em>No active listings</em></p>
+                                        </td>
+                                    </tr>
                                     {% endfor %}
                                 {% endfor %}
-                            </ul>
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                 </div>

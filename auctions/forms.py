@@ -14,7 +14,7 @@ class BidForm(forms.ModelForm):
         model = Bid
         fields = '__all__'
         labels = {
-            'amount': 'Place a bid:'
+            'amount': 'Bid Amount'
         }
         widgets = {
             'item': forms.HiddenInput(),
@@ -67,7 +67,8 @@ class AddListingForm(forms.ModelForm):
             'creator': forms.HiddenInput(),
             'status': forms.HiddenInput(),
             'categories': forms.CheckboxSelectMultiple(),
-            'reserve': forms.NumberInput(attrs={'min': 0.00, 'step': 0.01})
+            'reserve': forms.NumberInput(attrs={'min': 0.00, 'step': 0.01}),
+            'description': forms.Textarea(attrs={'rows':3, 'cols':50})
         }
 
     # image URL validation
