@@ -1,4 +1,5 @@
 {% extends "auctions/layout.html" %}
+{% load my_filters %}
 
 {% block title %}
     Pet Costumes Auction
@@ -22,15 +23,18 @@
                 <div class="row">
                 <div class="col p-4">
                     <h1>{{ category }} Costumes</h1>
-                    <ul>
+                    <div class="card-columns text-center">
                         {% for listing in listings %}
-                        <li>
-                            <a href="{% url 'listing' listing.id %}">
-                            {{ listing.title }}
-                            </a>
-                        </li>
+                        <div class="card text-center" style="width: 18rem;">
+                            <a href="{% url 'listing' listing.id %}"><img class="card-img-top card-img-thumbnail" src="{{ listing.imageURL }}" alt="Card image cap"></a>
+                            <div class="card-img-overlay img-price-bg"><div class="img-price-txt">{{ listing.current_price | currency }}</div></div>
+                            <div class="card-body">
+                                <h5 class="card-title"><a href="{% url 'listing' listing.id %}"><h3>{{ listing.title }}</h3></a></h5>
+                                <a href="{% url 'listing' listing.id %}" class="btn btn-primary btn-sm">View Listing</a>
+                            </div>
+                        </div>
                         {% endfor %}
-                    </ul>
+                    </div>
 
                 </div>
                 </div>
