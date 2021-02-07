@@ -1,0 +1,244 @@
+$font-deco: 'Gorditas', cursive;;
+$font-main: 'Lato', sans-serif;
+
+$violet: #5500E0;
+$yellow: #E0D816;
+$mint: #00E3AE;
+$lt-yellow: #fffee6;
+$lt-mint: #d9f7f0;
+$lt-violet: #f9f6ff;
+$dk-violet: #270164;
+$light-bg: white;
+
+body {
+    padding: 10px;
+    background-color: $lt-violet;
+}
+
+form ul {
+    list-style-type: none;
+}
+
+#id_categories {
+    list-style-type: none;
+}
+
+.bg-violet {
+    background-color: $violet;
+}
+
+.bg-yellow {
+    background-color: $yellow;
+}
+
+.nav-link {
+    color: $mint;
+    font-weight: 700;
+    font-size: medium;
+}
+
+.nav-main>li>a:focus, .nav-main>li>a:hover {
+    color: ivory;
+    text-shadow: 1px 2px 2px $dk-violet;
+}
+
+.brand-txt {
+    font-family: $font-deco;
+    font-size: 45px;
+    font-weight: 700;
+    color: $mint;
+}
+
+h1, h2, h3 {
+        font-family: $font-deco;
+        font-weight: 400;
+        color: $dk-violet;
+}
+
+p, a, h4, h5 {
+    font-family: $font-main;
+}
+
+.sub-sub-nav {
+    font-family: $font-main;
+    font-weight: bolder;
+    color: $dk-violet;
+    font-size: medium;
+}
+
+.txt-small {
+    font-family: $font-main;
+    font-size: small;
+}
+
+
+a:hover {
+    color: $mint;
+}
+
+a {
+    color: $violet;
+}
+
+.main-content {
+    background-color: $lt-mint;
+}
+
+.main-lt-bg {
+    background-color: $light-bg;
+}
+
+
+/* custom pill color from https://www.codeply.com/go/WJdJv71mhX/bootstrap-4-tab-pills-with-custom-color */
+/* not active */
+
+.nav-pills .pill-sub .nav-link:not(.active) {
+    background-color: $yellow;
+    color: $dk-violet;
+}
+
+.nav-pills .pill-section .nav-link:not(.active) {
+    background-color: $yellow;
+    color: $dk-violet;
+}
+
+.nav-pills .pill-sub .nav-link:not(.active) {
+    background-color: $yellow;
+    color: $dk-violet;
+    :hover {
+        background-color: $lt-yellow;
+    }
+}
+
+/* active (faded) */
+.nav-pills .pill-sub .nav-link {
+    background-color:$violet;
+    color: $mint;
+}
+
+.nav-pills .pill-section .nav-link {
+    background-color: $violet;
+    color: $yellow;
+}
+
+.nav-pills .pill-section .nav-link .disabled {
+    color: $dk-violet;
+}
+
+.browse-header {
+    color: $dk-violet;
+    font-family: $font-deco;
+    font-size: 22px;
+    font-weight: 400;
+}
+
+.listing-img {
+    width: 100%;
+    height: 450px;
+    object-fit:cover;
+}
+
+.img-box {
+    width: 100%;
+    height: 450px;
+}
+
+.img-expand-icon {
+    position: absolute;
+    top: 390px;
+    right: 15px;
+    font-size: 18px;
+  }
+
+.modal-img {
+    width: 100%;
+  }
+
+#listing-owner-box {
+    background-color: $lt-violet;
+    font-family: $font-main;
+    font-size: medium;
+    font-weight: bold;
+  }
+
+.recent-bids {
+      list-style-type: none;
+      padding-left: 0;
+      font-size: small;
+  }
+
+#bid-box {
+    width: 100%;
+    height: 200px;
+}
+
+#comment-list {
+    list-style-type: none;
+    padding-left: 0;
+    font-family: $font-main;
+}
+
+.txt-comment {
+    margin-left: 5px
+}
+
+.card-img-thumbnail {
+    width: 18rem;
+    height: 200px;
+    object-fit:cover;
+}
+
+.img-price-bg {
+    top: 0px;
+    left: 0px;
+    width: 6rem;
+    height: 18px;
+    background-color: $mint;
+    border-radius: 0px 0px 20px;
+  }
+
+.img-no-bids-bg {
+    top: 0px;
+    left: 0px;
+    width: 10rem;
+    height: 15px;
+    background-color: $mint;
+    border-radius: 0px 0px 20px;
+}
+
+.img-price-txt {
+    font-size: 18px;
+    font-weight: bold;
+    color: $dk-violet;
+    font-family: $font-main;
+    margin-top: -12px;
+    margin-left: -10px;
+}
+
+.img-no-bids-txt {
+    font-size: 14px;
+    font-style: italic;
+    font-weight: bold;
+    color: $dk-violet;
+    font-family: $font-main;
+    margin-top: -12px;
+    margin-left: -10px;
+}
+
+.browse-img-thumbnail {
+    width: 150px;
+    height: 100px;
+    object-fit:cover;
+}
+
+.browse-price-box {
+    background-color: $yellow;
+    color: $dk-violet;
+    font-family: $font-main;
+    font-size: 16px;
+    font-weight: bold;
+    border-radius: 10px;
+    height: 25px;
+    width: 180px;
+}
+
