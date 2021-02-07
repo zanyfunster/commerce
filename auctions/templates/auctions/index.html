@@ -54,10 +54,16 @@
                 <div class="tab-content" id="pills-tabContent">
 
                     <div class="tab-pane show active" id="pills-bids" role="tabpanel" aria-labelledby="pills-bids-tab">
-                        
-                        <h1>{{ user | capfirst }}'s Bids</h1>
-                        
-                        <hr>
+                        <div class="d-inline-flex justify-content-between w-100 m-0 p-0">
+                            <div><h1>{{ user | capfirst }}'s Bids </h1></div>
+                            <div>
+                                <span class="sub-sub-nav">{% if outbid|length > 0 %}<a href="#outbid"> {% endif %} Outbid {% if outbid|length > 0 %}</a>{% endif %}  |
+                                {% if high|length > 0 %} <a href="#high"> {% endif %} Highest Bidder {% if high|length > 0 %}</a>{% endif %} |
+                                {% if lost|length > 0 %} <a href="#lost"> {% endif %} Lost {% if lost|length > 0 %}</a>{% endif %}</span>
+                            </div>
+                            
+                        </div>
+                        <hr id="outbid">
 
                         {% if outbid|length == 0 and high|length == 0 and lost|length == 0 %}
                         <p>No bids yet! Better start <a href="{% url 'browse' %}">browsing!</a></p>
@@ -71,7 +77,7 @@
                             {% for listing in outbid %}
                             <div class="card text-center" style="width: 18rem;">
                                 <img class="card-img-top card-img-thumbnail" src="{{ listing.item.imageURL }}" alt="Card image cap"></a>
-                                <div class="card-img-overlay img-price-bg">{{ listing.item.current_price | currency }}</div>
+                                <div class="card-img-overlay img-price-bg"><div class="img-price-txt">{{ listing.item.current_price | currency }}</div></div>
                                 <div class="card-body">
                                     <h5 class="card-title"><a href="{% url 'listing' listing.item.id %}"><h3>{{ listing.item.title }}</h3></a></h5>
                                          <a href="{% url 'listing' listing.item.id %}" class="btn btn-primary btn-sm">View Listing</a>
@@ -81,9 +87,11 @@
                             {% endfor %}
                             
                         </div>
+                        
+                        {% if outbid|length > 9 %}<div class="text-center p-5 w-100"><a href="#top" class="btn btn-secondary btn-sm"><i class="fas fa-chevron-up"></i></a></div>{% endif %}
                         {% endif %}
                         {% if high|length > 0 %}
-                        <h2 class="text-center pt-3 pb-3">Highest Bidder</h2>
+                        <h2 class="text-center pt-3 pb-3" id="high">Highest Bidder</h2>
 
                         <div class="card-columns text-center">
 
@@ -97,11 +105,12 @@
                                 </div>
                             </div>
                             {% endfor %}
-
+                            
                         </div>
+                        {% if high|length > 9 %}<div class="text-center p-5 w-100"><a href="#top" class="btn btn-secondary btn-sm"><i class="fas fa-chevron-up"></i></a></div>{% endif %}
                         {% endif %}
                         {% if lost|length > 0 %}
-                        <h2 class="text-center pt-3 pb-3">Lost Auctions</h2>
+                        <h2 class="text-center pt-3 pb-3" id="lost">Lost Auctions</h2>
 
                         <div class="card-columns text-center">
                             {% for listing in lost %}
@@ -116,6 +125,7 @@
 
                             {% endfor %}
                         </div>
+                        {% if lost|length > 9 %}<div class="text-center p-5 w-100"><a href="#top" class="btn btn-secondary btn-sm"><i class="fas fa-chevron-up"></i></a></div>{% endif %}
                         {% endif %}
                     </div>
                     <div class="tab-pane show" id="pills-owned" role="tabpanel" aria-labelledby="pills-owned-tab">
@@ -143,7 +153,9 @@
                             {% endfor %}
                             
                         </div>
-
+                        {% if owned|length > 9 %}
+                        <div class="text-center p-5 w-100"><a href="#top" class="btn btn-secondary btn-sm"><i class="fas fa-chevron-up"></i></a></div>
+                        {% endif %}
                     </div>
                     <div class="tab-pane show" id="pills-watching" role="tabpanel" aria-labelledby="pills-watching-tab">
 
@@ -169,7 +181,9 @@
                             {% endfor %}
                             
                         </div>
-
+                        {% if watchlist|length > 9 %}
+                        <div class="text-center p-5 w-100"><a href="#top" class="btn btn-secondary btn-sm"><i class="fas fa-chevron-up"></i></a></div>
+                        {% endif %}
                     </div>
                     <div class="tab-pane show" id="pills-winnings" role="tabpanel" aria-labelledby="pills-winnings-tab">
 
@@ -191,7 +205,9 @@
                             {% endfor %}
                             
                         </div>
-
+                        {% if winnings|length > 9 %}
+                        <div class="text-center p-5 w-100"><a href="#top" class="btn btn-secondary btn-sm"><i class="fas fa-chevron-up"></i></a></div>
+                        {% endif %}
                     </div>
                     
                 </div>
@@ -226,6 +242,9 @@
                         </div>
                         {% endfor %}
                     </div>
+                    {% if listings|length > 9 %}
+                    <div class="text-center p-5 w-100"><a href="#top" class="btn btn-secondary btn-sm"><i class="fas fa-chevron-up"></i></a></div>
+                    {% endif %}
                 </div>
                 </div>
             </div>
