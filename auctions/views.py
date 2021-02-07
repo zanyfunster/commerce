@@ -177,17 +177,15 @@ def listing(request, listing_id):
         # set bid form to none so it won't display
         bid_form = None
 
+    watchlisted = False
     # check user's watchlist for item to assign true/false to watchlisted
-    watchlist_check = WatchedListing.objects.filter(watcher=user,item=listing)
-    watching_all = WatchedListing.objects.filter(item=listing)
-    watchers = len(watching_all)
+    if request.user.is_authenticated:
+        watchlist_check = WatchedListing.objects.filter(watcher=user,item=listing)
+        watching_all = WatchedListing.objects.filter(item=listing)
 
-    # empty query returned so not on watchlist
-    if len(watchlist_check) == 0:
-        watchlisted = False
-    # query had results, so already on watchlist
-    else:
-        watchlisted = True
+        # empty query returned so not on watchlist
+        if len(watchlist_check) > 0:
+            watchlisted = True
 
     # add comment form initialized with commenter and topic
     comment_form = CommentForm(initial={'commenter': request.user.id, 'topic': listing_id})
@@ -203,7 +201,6 @@ def listing(request, listing_id):
         "bid_form": bid_form,
         "categories": categories,
         "watchlisted": watchlisted,
-        "watchers": watchers,
         "comment_form": comment_form,
         "comments": comments
     })

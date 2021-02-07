@@ -2,96 +2,238 @@
 {% load my_filters %}
 
 {% block title %}
-    Pet Costumes Auction: {{ listing.title }}
+    : {{ listing.pet_type }} Costume: {{ listing.title }}
 {% endblock %}
 
 {% block body %}
-
-    {% if owner_status %}
-
-        {% if owner_status == 'Active' %}
-
-            <p>Your listing is currently {{owner_status}} and has {{ bids|length }} bids.</p>
-            <form action="{% url 'close' listing.id %}" method="POST">
-                {% csrf_token %}
-                <input type="submit" value="Close Listing">
-            </form>
-            {% else %}
-            <p>You closed this listing.</p>
-
-        {% endif %}
-
-    {% endif %}
-        
-    <h2>{{ listing.title }}</h2>
-    <p><span class="badge badge-pill badge-secondary"> <a href="{% url 'category' listing.pet_type|slugify %}">{{ listing.pet_type }} </a></span>{% for category in categories %} <span class="badge badge-pill badge-light"><a href="{% url 'category' category|slugify %}">{{ category }}</a></span> {% endfor %} </p>
-    <p>{{ listing.description }}</p>
-
-    <img src="{{ listing.imageURL }}">
-
-    {% if bids|length > 0 %}
-        <h4>Current Bid: {{ price | currency }}</h4>
-        <p><em>{{ bids | length }} active bidder{{ bids|pluralize}}</em></p>
-    {% else %}
-        <h4>Reserve Price: {{ price | currency }}</h4>
-    {% endif %}
-
-    {% if user.is_authenticated and bid_form %}
-    <div>
-        <form action="{% url 'bid' listing.id %}" method="POST">
-            {% csrf_token %}
-            {{ bid_form.as_p }}
-            <input type="submit" value="Place Bid">
-        </form>
+<div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3 class="modal-title" id="img-modal-title">{{ listing.title }}</h3>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+            <img src="{{ listing.imageURL }}" class="modal-img" alt="Full Size { listing.title }} Costume Image">
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        </div>
+      </div>
     </div>
+</div>
 
-    <div>
-        
-        {% if watchlisted %}
-            <a href="{% url 'watchlist_edit' listing.id %}" class="btn btn-secondary btn-sm active" role="button" aria-pressed="true">Remove from Watchlist</a>
-        {% else %}
-            <small>{{ watchers }} user{{ watchers|pluralize}} currently watching</small>
-            <a href="{% url 'watchlist_edit' listing.id %}" class="btn btn-primary btn-sm active" role="button" aria-pressed="true">Add to Watchlist</a>
-        {% endif %}
+<div class="container main-content">
+    <div class="row pt-1 bg-yellow">
+        <div class="col">
+        <ul class="nav nav-pills mb-1 sub-nav" id="pills-tab" role="tablist">
+            <li class="nav-item pill-section" role="presentation">
+                <a class="nav-link disabled" id="pills-listing" data-bs-toggle="pill" href="" role="tab" aria-controls="pills-bids" aria-selected="false">{{ listing.pet_type }} Costume: {{ listing.title }}</a>
+            </li>
+        </ul>
+        </div>
     </div>
-    {% elif user.is_authenticated and not bid_form %}
+    <div class="row">
+        <div class="col p-4 ">
+            <div class="container rounded border border-light main-lt-bg">
+                
+                {% if owner_status %}
+                <div class="row">
+                    <div class="col-12 p-4">
+                        <div class="d-flex border rounded justify-content-between" id="listing-owner-box">
+                            {% if owner_status == 'Active' %}
+                            <div class="p-2 ml-2 mt-1">Your Listing Status: {{owner_status}}</div>
+                            <div class="p-2 mr-2">
+                                <form action="{% url 'close' listing.id %}" method="POST">
+                                    {% csrf_token %}
+                                <button type="submit" class="btn btn-secondary btn-sm">Close Listing</button>
+                                </form>
+                            </div>
+                            {% else %}
+                            <div class="p-2 ml-2">Your Listing Status: {{owner_status}}</div>
+                            <div class="p-2">
+                                {% if bids|length > 0 %}
+                                Winner: {{ listing.winner }}
+                                {% else %}
+                                No bidders
+                                {% endif %}
+                            </div>
+                            <div class="p-2 mr-2">
+                                {% if bids|length > 0 %}
+                                Highest Bid: {{ listing.current_price | currency }}
+                                {% else %}
+                                Reserve Price Not Met
+                                {% endif %}
+                            </div>
+                            {% endif %}
+            
+                        </div>
 
-        <p>This auction has ended. Bidding is closed.</p>
+                    </div>
+                </div>
+                {% endif %}
 
-    {% elif not user.is_authenticated %}
+                {% if messages %}
+                <div class="row">
+                    <div class="col-12 p-4">
+                        <div id="messages">
+                            
+                            {% for message in messages %}
+                                <div class="alert alert-{% if message.tags %}{{ message.tags }}"{% endif %} role="alert">
+                                    {{ message }}
+                                </div>
+                            {% endfor %}     
+                                    
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
 
-        <h5><a href="{% url 'register' %}">Register</a> or <a href="{% url 'login' %}">log in</a> to start bidding!</h5>
+                <div class="row">
+                    <div class="col-12 p-2">
+                        <div class="container">
+                        <div class="row">
+                        <div class="col-8">
+                        <div class="card h-100">
+                            <div class="img-box">
+                                <img class="card-img-top listing-img" src="{{ listing.imageURL }}" alt="{{ listing.title }} Costume Image">
+                                <div class="card-img-overlay">
+                                    <button type="button" class="btn btn-secondary img-expand-icon" data-toggle="modal" data-target="#exampleModalCenter">
+                                        <i class="fas fa-expand-arrows-alt "></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-12">
+                                        <div class="d-flex justify-content-between" id="listing-info-box">
+                                            <h1 class="card-text">{{ listing.title }}</h1>
+                                            <div>
+                                                {% if user.is_authenticated %}
+                                                    <p class="card-text">
+                                                    {% if watchlisted %}
+                                                    <a href="{% url 'watchlist_edit' listing.id %}" class="btn btn-secondary btn-sm" role="button" aria-pressed="true">Remove from Watchlist</a>
+                                                    {% else %}
+                                                        <a href="{% url 'watchlist_edit' listing.id %}" class="btn btn-primary btn-sm" role="button" aria-pressed="true">Add to Watchlist</a>
+                                                    {% endif %}
+                                                {% endif %}
+                                                </p>
+                                            </div>   
+                                        </div> 
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-12 pt-2 pb-3">
+                                        <h5 class="card-text">{{ listing.description }}</h5>
+                                    </div>                        
+                                </div>
+                                <div class="row">
+                                    <div class="col-12 pt-1">
+                                        <hr>
+                                        <div class="txt-small"><strong>Categories:</strong><span class="badge badge-pill badge-light"> <a href="{% url 'category' listing.pet_type|slugify %}">{{ listing.pet_type }} </a></span>{% for category in categories %} <span class="badge badge-pill badge-light"><a href="{% url 'category' category|slugify %}">{{ category }}</a></span> {% endfor %}</div>     
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        </div>
+                        <div class="col-4">
+                        <div class="card h-100">
 
-    {% endif %}
+                            <ul class="list-group list-group-flush">
 
-    <h4>Bid History</h4>
-    
-    <ul>
-    {% for bid in bids %}
-        <li>
-            {{ bid.bidder }} bid {{ bid.amount | currency }} on {{ bid.bid_timestamp|date:"n/j/y" }} {{ bid.bid_timestamp|time:"H:i e" }} 
-        </li>
-    
-    {% empty %}
-        <em>No bids!</em>
-    {% endfor %}
-    </ul>
+                                <li class="list-group-item p-3 pt-5 mt-5 text-center">
+                                    <div id="bid-box" class="align-items-center">
+                                    {% if bids|length > 0 %}
+                                        <h3 class="card-title">Current Bid: {{ price | currency }}</h3>
+                                    {% else %}
+                                        <h3 class="card-title">Reserve Price: {{ price | currency }}</h3>
+                                    {% endif %}
 
-    <h4>Comments</h4>
+                                    {% if user.is_authenticated and bid_form %}
+                                    <div>
+                                        <form action="{% url 'bid' listing.id %}" method="POST">
+                                            {% csrf_token %}
+                                            {{ bid_form.as_p }}
+                                            <button type="submit" class="btn btn-primary">Place Bid</button>
+                                        </form>
+                                    </div>
 
-    {% for comment in comments %}
-        <li>
-            <p>{{ comment.commenter }} said:</p> <p>{{ comment.comment_text }}</p>
-            <p>{{ comment.comment_timestamp|date:"n/j/y" }} {{ comment.comment_timestamp|time:"H:i e" }} </p>
-        </li>
-    {% empty %}
-        <em>No comments!</em>
-    {% endfor %}
+                                    {% elif user.is_authenticated and not bid_form %}
 
-    <form action="{% url 'comment_edit' listing.id %}" method="POST">
-        {% csrf_token %}
-        {{ comment_form.as_p }}
-        <input type="submit" value="Submit">
-    </form>
+                                        <p class="card-text">Bidding has ended.</p>
+                                        {% if bids|length > 0 %} <h4>Winner: {{ listing.winner| capfirst }}</h4> 
+                                        {% else %}<p class="card-text"><em>Reserve price not met.</em></p>{% endif %}
+
+                                    {% elif not user.is_authenticated %}
+
+                                        <p class="card-text"><a href="{% url 'register' %}">Register</a> or <a href="{% url 'login' %}">log in</a> to start bidding!</p>
+
+                                    {% endif %}
+                                    </div>
+                                </li>
+
+                                <li class="list-group-item p-3 mt-3">
+                                    <div class="recent-bids">
+                                        <h3 class="text-center">Bid History</h3>
+                                        <h5 class="text-center pb-2">{{ bids | length }} active bidder{{ bids|pluralize}}</h5>
+                                        {% if bids|length > 0 %} 
+                                        <ul class="recent-bids">
+                                            <li><strong>Recent Bids:</strong></li> 
+                                            {% for bid in bids %}
+                                            {% if forloop.counter < 15 %}
+                                            <li class="txt-small">
+                                                {{ bid.bidder }} bid {{ bid.amount | currency }} on {{ bid.bid_timestamp|date:"n/j/y" }} {{ bid.bid_timestamp|time:"H:i e" }} 
+                                            </li>
+                                            {% endif %}
+                                            {% endfor %}
+                                        </ul>
+                                        {% endif %}
+                                    </div>
+                                </li>
+                            </ul>
+
+                        </div>
+                    </div>
+                    </div>
+                    </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12 p-4">
+                        <div class="d-flex justify-content-between" id="comment-box">
+                        
+                            <div class="m-1" style="width: 65%">
+                                <h3>Comments</h3>
+                                <ul id="comment-list">
+                                {% for comment in comments %}
+                                    <li>
+                                        <p class="txt-small"><i class="fas fa-user"></i> {{ comment.commenter }} on {{ comment.comment_timestamp|date:"n/j/y" }} {{ comment.comment_timestamp|time:"H:i e" }}:</p> 
+                                        <p class="txt-comment">"{{ comment.comment_text }}"</p>
+                                    </li>
+                                    <hr>
+                                {% empty %}
+                                    <em>No comments!</em>
+                                {% endfor %}
+                                </ul>
+                            </div>
+                            <div class="m-1 w-20">
+                                <h3>Leave a Comment:</h3>
+                                
+                                <form action="{% url 'comment_edit' listing.id %}" method="POST">
+                                    {% csrf_token %}
+                                    {{ comment_form.as_p }}
+                                    <input type="submit" value="Submit">
+                                    <small><em>Limit: 350 characters</em></small>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
 {% endblock %}

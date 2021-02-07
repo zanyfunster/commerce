@@ -2,151 +2,254 @@
 {% load my_filters %}
 
 {% block title %}
-    Pet Costumes Auction
+{% if user.is_authenticated %}: {{ user | capfirst }}'s Dashboard{% endif %}
 {% endblock %}
 
 {% block body %}
 
-<div class="container">
-{% if user.is_authenticated %}
-
-    <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
-        <li class="nav-item" role="presentation">
-            <a class="nav-link active" id="pills-bids-tab" data-bs-toggle="pill" href="#pills-bids" role="tab" aria-controls="pills-bids" aria-selected="false">My Bids</a>
-        </li>
-        <li class="nav-item" role="presentation">
-            <a class="nav-link" id="pills-owned-tab" data-bs-toggle="pill" href="#pills-owned" role="tab" aria-controls="pills-owned" aria-selected="false">My Listings</a>
-        </li>
-        <li class="nav-item" role="presentation">
-            <a class="nav-link" id="pills-watching-tab" data-bs-toggle="pill" href="#pills-watching" role="tab" aria-controls="pills-watching" aria-selected="true">My Watchlist</a>
-        </li>    
-        <li class="nav-item" role="presentation">
-            <a class="nav-link" id="pills-winnings-tab" data-bs-toggle="pill" href="#pills-winnings" role="tab" aria-controls="pills-winnings" aria-selected="false">My Winnings</a>
-        </li>
-    </ul>
-
-    <div class="tab-content" id="pills-tabContent">
-
-        <div class="tab-pane show active" id="pills-bids" role="tabpanel" aria-labelledby="pills-bids-tab">
-            
-            <h2>Outbid</h2>
-
-            <ul>
-                {% for listing in outbid %}
-                <li>
-                    <a href="{% url 'listing' listing.item.id %}">
-                    {{ listing.item.title }} 
-                    </a>
-                    -  Your Last Bid: {{ listing.amount | currency }} | Current Bid: {{ listing.item.current_price | currency }}
-                </li>
-                {% empty %}
-                <em>No one is currently outbidding you!</em>
-                {% endfor %}
-            </ul>
-
-            <h2>Highest Bidder</h2>
-
-            <ul>
-                {% for listing in high %}
-                <li>
-                    <a href="{% url 'listing' listing.item.id %}">
-                    {{ listing.item.title }}
-                    </a>
-                    -  Your Last Bid: {{ listing.amount | currency }}
-                </li>
-                {% empty %}
-                <em>You are not the highest bidder in any auctions!</em>
-                {% endfor %}
-            </ul>
-
-            <h2>Lost Auctions</h2>
-
-            <ul>
-                {% for listing in lost %}
-                <li>
-                    <a href="{% url 'listing' listing.item.id %}">
-                    {{ listing.item.title }}
-                    </a> -  Winner: {{ listing.item.winner }}
-                </li>
-                {% empty %}
-                <em>You have not lost any auctions!</em>
-                {% endfor %}
-            </ul>
-
+<div class="container main-content">
+    {% if user.is_authenticated %}
+    <div class="row pt-1 bg-yellow">
+        <div class="col">
+        <ul class="nav nav-pills mb-1 sub-nav" id="pills-tab" role="tablist">
+            <li class="nav-item pill-section" role="presentation">
+                <a class="nav-link disabled" id="pills-bids-tab" data-bs-toggle="pill" href="" role="tab" aria-controls="pills-bids" aria-selected="false">{{ user | capfirst }}'s Dashboard:</a>
+            </li>
+            <li class="nav-item pill-sub" role="presentation">
+                <a class="nav-link active" id="pills-bids-tab" data-bs-toggle="pill" href="#pills-bids" role="tab" aria-controls="pills-bids" aria-selected="false"><i class="fas fa-hand-holding-usd"></i> Bids</a>
+            </li>
+            <li class="nav-item pill-sub" role="presentation">
+                <a class="nav-link" id="pills-owned-tab" data-bs-toggle="pill" href="#pills-owned" role="tab" aria-controls="pills-owned" aria-selected="false"><i class="fas fa-cash-register"></i> Listings</a>
+            </li>
+            <li class="nav-item pill-sub" role="presentation">
+                <a class="nav-link" id="pills-watching-tab" data-bs-toggle="pill" href="#pills-watching" role="tab" aria-controls="pills-watching" aria-selected="true"><i class="fas fa-grin-hearts"></i> Watchlist</a>
+            </li>    
+            <li class="nav-item pill-sub" role="presentation">
+                <a class="nav-link" id="pills-winnings-tab" data-bs-toggle="pill" href="#pills-winnings" role="tab" aria-controls="pills-winnings" aria-selected="false"><i class="fas fa-trophy"></i> Winnings</a>
+            </li>
+        </ul>
         </div>
-        <div class="tab-pane show" id="pills-owned" role="tabpanel" aria-labelledby="pills-owned-tab">
-
-            <h2>My Listings</h2>
-
-            <ul>
-                {% for listing in owned %}
-                <li>
-                    <a href="{% url 'listing' listing.id %}">
-                    {{ listing.title }}
-                    </a>
-                    {% if listing.current_price == listing.reserve %}
-                        <em>Reserve not met!</em>
-                    {% else %}
-                        - Current Bid: {{ listing.current_price | currency }}
-                    {% endif %}
-                </li>
-                {% empty %}
-                <em>You have not created any auctions!</em>
-                {% endfor %}
-            </ul>
-
-        </div>
-        <div class="tab-pane show" id="pills-watching" role="tabpanel" aria-labelledby="pills-watching-tab">
-
-            <h2>My Watchlist</h2>
-            <ul>
-                {% for listing in watchlist %}
-                <li>
-                    <a href="{% url 'listing' listing.item.id %}">
-                    {{ listing.item }}
-                    </a>
-                    - Current Bid: {{ listing.item.current_price| currency  }}
-                </li>
-                {% empty %}
-                <em>No listings on watchlist!</em>
-                {% endfor %}
-            </ul>
-
-        </div>
-        <div class="tab-pane show" id="pills-winnings" role="tabpanel" aria-labelledby="pills-winnings-tab">
-
-            <h2>My Winnings</h2>
-            <ul>
-                {% for listing in winnings %}
-                <li>
-                    <a href="{% url 'listing' listing.id %}">
-                    {{ listing.title }}
-                    </a>
-                </li>
-                {% empty %}
-                <em>You haven't won any auctions!</em>
-                {% endfor %}
-            </ul>
-
-        </div>
-        
     </div>
 
-{% else %}
+    <div class="row">
+        <div class="col p-4 ">
+            <div class="container rounded border border-light main-lt-bg">
+                {% if messages %}
+                <div class="row">
+                    <div class="col-12 p-4">
+                        <div id="messages">
+                            
+                            {% for message in messages %}
+                                <div class="alert alert-{% if message.tags %}{{ message.tags }}"{% endif %} role="alert">
+                                    {{ message }}
+                                </div>
+                            {% endfor %}     
+                                    
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+                <div class="row">
+                <div class="col p-4 ">
+                <div class="tab-content" id="pills-tabContent">
 
-<h2>Active Listings</h2>
+                    <div class="tab-pane show active" id="pills-bids" role="tabpanel" aria-labelledby="pills-bids-tab">
+                        <div class="d-inline-flex justify-content-between w-100 m-0 p-0">
+                            <div><h1>{{ user | capfirst }}'s Bids </h1></div>
+                            <div>
+                                <span class="sub-sub-nav">{% if outbid|length > 0 %}<a href="#outbid"> {% endif %} Outbid {% if outbid|length > 0 %}</a>{% endif %}  |
+                                {% if high|length > 0 %} <a href="#high"> {% endif %} Highest Bidder {% if high|length > 0 %}</a>{% endif %} |
+                                {% if lost|length > 0 %} <a href="#lost"> {% endif %} Lost {% if lost|length > 0 %}</a>{% endif %}</span>
+                            </div>
+                            
+                        </div>
+                        <hr id="outbid">
 
-    <ul>
-        {% for listing in listings %}
-        <li>
-            <a href="{% url 'listing' listing.id %}">
-            {{ listing.title }}
-            </a>
-            - Current Price: {{ listing.current_price | currency }}
-        </li>
-        {% endfor %}
-    </ul>
+                        {% if outbid|length == 0 and high|length == 0 and lost|length == 0 %}
+                        <p>No bids yet! Better start <a href="{% url 'browse' %}">browsing!</a></p>
+                        {% endif %}
+                        
+                        {% if outbid|length > 0 %}
+                        <h2 class="text-center pt-3 pb-3">Outbid</h2>
 
-{% endif %}
+                        <div class="card-columns">
+
+                            {% for listing in outbid %}
+                            <div class="card text-center" style="width: 18rem;">
+                                <img class="card-img-top card-img-thumbnail" src="{{ listing.item.imageURL }}" alt="Card image cap"></a>
+                                <div class="card-img-overlay img-price-bg"><div class="img-price-txt">{{ listing.item.current_price | currency }}</div></div>
+                                <div class="card-body">
+                                    <h5 class="card-title"><a href="{% url 'listing' listing.item.id %}"><h3>{{ listing.item.title }}</h3></a></h5>
+                                         <a href="{% url 'listing' listing.item.id %}" class="btn btn-primary btn-sm">View Listing</a>
+                                </div>
+                            </div>
+                            
+                            {% endfor %}
+                            
+                        </div>
+                        
+                        {% if outbid|length > 9 %}<div class="text-center p-5 w-100"><a href="#top" class="btn btn-secondary btn-sm"><i class="fas fa-chevron-up"></i></a></div>{% endif %}
+                        {% endif %}
+                        {% if high|length > 0 %}
+                        <h2 class="text-center pt-3 pb-3" id="high">Highest Bidder</h2>
+
+                        <div class="card-columns text-center">
+
+                            {% for listing in high %}
+                            <div class="card text-center" style="width: 18rem;">
+                                <a href="{% url 'listing' listing.item.id %}"><img class="card-img-top card-img-thumbnail" src="{{ listing.item.imageURL }}" alt="Card image cap"></a>
+                                <div class="card-img-overlay img-price-bg"><div class="img-price-txt">{{ listing.item.current_price | currency }}</div></div>
+                                <div class="card-body">
+                                    <h5 class="card-title"><a href="{% url 'listing' listing.item.id %}"><h3>{{ listing.item.title }}</h3></a></h5>                                            
+                                    <a href="{% url 'listing' listing.item.id %}" class="btn btn-primary btn-sm">View Listing</a>
+                                </div>
+                            </div>
+                            {% endfor %}
+                            
+                        </div>
+                        {% if high|length > 9 %}<div class="text-center p-5 w-100"><a href="#top" class="btn btn-secondary btn-sm"><i class="fas fa-chevron-up"></i></a></div>{% endif %}
+                        {% endif %}
+                        {% if lost|length > 0 %}
+                        <h2 class="text-center pt-3 pb-3" id="lost">Lost Auctions</h2>
+
+                        <div class="card-columns text-center">
+                            {% for listing in lost %}
+                            <div class="card text-center" style="width: 18rem;">
+                                <a href="{% url 'listing' listing.item.id %}"><img class="card-img-top card-img-thumbnail" src="{{ listing.item.imageURL }}" alt="Card image cap"></a>
+                                <div class="card-img-overlay img-price-bg"><div class="img-price-txt">{{ listing.item.current_price | currency }}</div></div>
+                                <div class="card-body">
+                                    <h5 class="card-title"><a href="{% url 'listing' listing.item.id %}"><h3>{{ listing.item.title }}</h3></a></h5>                                            
+                                    <p class="card-text">Winner: {{ listing.item.winner }}</p>
+                                </div>
+                            </div>
+
+                            {% endfor %}
+                        </div>
+                        {% if lost|length > 9 %}<div class="text-center p-5 w-100"><a href="#top" class="btn btn-secondary btn-sm"><i class="fas fa-chevron-up"></i></a></div>{% endif %}
+                        {% endif %}
+                    </div>
+                    <div class="tab-pane show" id="pills-owned" role="tabpanel" aria-labelledby="pills-owned-tab">
+
+                        <h1>{{ user | capfirst }}'s Seller Listings</h1>
+                        <hr>
+
+                        <div class="card-columns text-center">
+
+                            {% for listing in owned %}
+                            <div class="card text-center" style="width: 18rem;">
+                                <a href="{% url 'listing' listing.id %}"><img class="card-img-top card-img-thumbnail" src="{{ listing.imageURL }}" alt="Card image cap"></a>
+                                {% if listing.current_price == listing.reserve %}
+                                <div class="card-img-overlay img-no-bids-bg"><div class="img-no-bids-txt">Reserve not met!</div></div>
+                                {% else %}
+                                <div class="card-img-overlay img-price-bg"><div class="img-price-txt">{{ listing.current_price | currency }}</div></div>
+                                {% endif %}
+                                <div class="card-body">
+                                    <h5 class="card-title"><a href="{% url 'listing' listing.id %}"><h3>{{ listing.title }}</h3></a></h5>
+                                    <a href="{% url 'listing' listing.id %}" class="btn btn-primary btn-sm">View Listing</a>
+                                </div>
+                            </div>
+                            {% empty %}
+                            <em>You have not created any listings!</em>
+                            {% endfor %}
+                            
+                        </div>
+                        {% if owned|length > 9 %}
+                        <div class="text-center p-5 w-100"><a href="#top" class="btn btn-secondary btn-sm"><i class="fas fa-chevron-up"></i></a></div>
+                        {% endif %}
+                    </div>
+                    <div class="tab-pane show" id="pills-watching" role="tabpanel" aria-labelledby="pills-watching-tab">
+
+                        <h1>{{ user | capfirst }}'s Watchlist</h1>
+                        <hr>
+
+                        <div class="card-columns text-center">
+
+                            {% for listing in watchlist %}
+                            <div class="card text-center" style="width: 18rem;">
+                                <a href="{% url 'listing' listing.item.id %}"><img class="card-img-top card-img-thumbnail" src="{{ listing.item.imageURL }}" alt="Card image cap"></a>
+                                <div class="card-img-overlay img-price-bg"><div class="img-price-txt">{{ listing.item.current_price | currency }}</div></div>
+                                <div class="card-body">
+                                    <h5 class="card-title"><a href="{% url 'listing' listing.item.id %}"><h3>{{ listing.item }}</h3></a></h5>                                            
+                                    <div class="row">
+                                        <div class="col-6"><a href="{% url 'listing' listing.item.id %}" class="btn btn-primary btn-sm">View</a></div>
+                                        <div class="col-6"><a href="{% url 'watchlist_edit' listing.item.id %}" class="btn btn-secondary btn-sm" role="button" aria-pressed="true">Unwatch</a></div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% empty %}
+                            <em>No listings on watchlist!</em>
+                            {% endfor %}
+                            
+                        </div>
+                        {% if watchlist|length > 9 %}
+                        <div class="text-center p-5 w-100"><a href="#top" class="btn btn-secondary btn-sm"><i class="fas fa-chevron-up"></i></a></div>
+                        {% endif %}
+                    </div>
+                    <div class="tab-pane show" id="pills-winnings" role="tabpanel" aria-labelledby="pills-winnings-tab">
+
+                         <h1>{{ user | capfirst }}'s Winnings</h1>
+                         <hr>
+                         <div class="card-columns text-center">
+
+                            {% for listing in winnings %}
+                            <div class="card text-center" style="width: 18rem;">
+                                <a href="{% url 'listing' listing.id %}"><img class="card-img-top card-img-thumbnail" src="{{ listing.imageURL }}" alt="Card image cap"></a>
+                                <div class="card-img-overlay img-price-bg"><div class="img-price-txt">{{ listing.current_price | currency }}</div></div>
+                                <div class="card-body">
+                                    <h5 class="card-title"><a href="{% url 'listing' listing.id %}"><h3>{{ listing.title }}</h3></a></h5>
+                                    <a href="{% url 'listing' listing.id %}" class="btn btn-primary btn-sm">View Listing</a>
+                                </div>
+                            </div>
+                            {% empty %}
+                            <em>You haven't won any auctions!</em>
+                            {% endfor %}
+                            
+                        </div>
+                        {% if winnings|length > 9 %}
+                        <div class="text-center p-5 w-100"><a href="#top" class="btn btn-secondary btn-sm"><i class="fas fa-chevron-up"></i></a></div>
+                        {% endif %}
+                    </div>
+                    
+                </div>
+                </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <div class="row pt-1 bg-yellow">
+        <div class="col p-3">
+        </div>
+    </div>
+    <div class="row">
+        <div class="col p-4">
+            <div class="container rounded border border-light main-lt-bg">
+                <div class="row">
+                <div class="col p-4 ">
+                <h1>All Active Listings</h1>
+                <hr>
+
+                    <div class="card-columns">
+                    
+                        {% for listing in listings %}
+                        <div class="card text-center" style="width: 18rem;">
+                            <a href="{% url 'listing' listing.id %}"><img class="card-img-top card-img-thumbnail" src="{{ listing.imageURL }}" alt="Card image cap"></a>
+                            <div class="card-img-overlay img-price-bg"><div class="img-price-txt">{{ listing.current_price | currency }}</div></div>
+                            <div class="card-body">
+                                <h5 class="card-title"><a href="{% url 'listing' listing.id %}"><h3>{{ listing.title }}</h3></a></h5>
+                                <a href="{% url 'listing' listing.id %}" class="btn btn-primary btn-sm">View Listing</a>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% if listings|length > 9 %}
+                    <div class="text-center p-5 w-100"><a href="#top" class="btn btn-secondary btn-sm"><i class="fas fa-chevron-up"></i></a></div>
+                    {% endif %}
+                </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
 </div>
 {% endblock %}

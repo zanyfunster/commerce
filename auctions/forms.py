@@ -67,7 +67,8 @@ class AddListingForm(forms.ModelForm):
             'creator': forms.HiddenInput(),
             'status': forms.HiddenInput(),
             'categories': forms.CheckboxSelectMultiple(),
-            'reserve': forms.NumberInput(attrs={'min': 0.00, 'step': 0.01})
+            'reserve': forms.NumberInput(attrs={'min': 0.00, 'step': 0.01}),
+            'description': forms.Textarea(attrs={'rows':3, 'cols':50})
         }
 
     # image URL validation
@@ -124,9 +125,10 @@ class CommentForm(forms.ModelForm):
         model = Comment
         fields = '__all__'
         labels = {
-            'comment_text': 'Leave a comment'
+            'comment_text': ''
         }
         widgets = {
             'commenter': forms.HiddenInput(),
-            'topic': forms.HiddenInput()
+            'topic': forms.HiddenInput(),
+            'comment_text': forms.Textarea(attrs={'rows':3, 'cols':35})
         }
